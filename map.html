@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Map - Hyperlocal Weather Impact and Community Alert Web App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap" async defer></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-cloud-sun"></i> HyperWeather
+            </div>
+            <ul class="nav-menu">
+                <li><a href="main.html">Home</a></li>
+                <li><a href="map.html" class="active">Map</a></li>
+                <li><a href="alerts.html">Alerts</a></li>
+                <li><a href="report.html">Report</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="map-section">
+        <div class="container">
+            <div class="map-header">
+                <div>
+                    <h1>Weather Map</h1>
+                    <p class="subtext">Track live alert zones and weather impact across your neighborhood.</p>
+                </div>
+            </div>
+            <div class="map-wrapper">
+                <div class="map-container">
+                    <div id="map"></div>
+                    <div class="map-marker marker-danger" style="top: 24%; left: 22%;">
+                        <span></span>
+                    </div>
+                    <div class="map-marker marker-warning" style="top: 52%; left: 62%;">
+                        <span></span>
+                    </div>
+                    <div class="map-marker marker-safe" style="top: 70%; left: 36%;">
+                        <span></span>
+                    </div>
+                    <div class="control-panel">
+                        <div class="panel-title">
+                            <i class="fas fa-sliders-h"></i>
+                            <span>Live Alert Controls</span>
+                        </div>
+                        <div class="panel-item"><i class="fas fa-map-pin"></i> Alert Filter</div>
+                        <div class="panel-item"><i class="fas fa-bolt"></i> Live Updates</div>
+                        <div class="panel-item"><i class="fas fa-location-arrow"></i> Center on Me</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="script.js"></script>
+</body>
+</html>
