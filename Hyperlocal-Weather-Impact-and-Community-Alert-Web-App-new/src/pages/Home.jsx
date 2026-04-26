@@ -1,4 +1,4 @@
-// pages/Home.jsx
+
 import { useState } from 'react';
 
 const Home = () => {
@@ -7,7 +7,7 @@ const Home = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // 1. Replace with your actual key from openweathermap.org
+  
   const API_KEY = "dc8754a29ab20f1c66f1c660f4346f20"; 
 
   const handleSearch = async () => {
@@ -20,7 +20,7 @@ const Home = () => {
     setError('');
 
     try {
-      // 2. Note the ",LK" at the end of the query - this forces search in Sri Lanka
+      
       const response = await fetch(
         `https://api.openweathermap.org/data/2.5/weather?q=${location},LK&units=metric&appid=${API_KEY}`
       );
