@@ -493,7 +493,7 @@ body {
 
 .submit-btn:hover {
   transform: scale(1.01);
-  opacity: 0.9;
+  opacity: 0.8;
 }
 
 /* Responsive */
