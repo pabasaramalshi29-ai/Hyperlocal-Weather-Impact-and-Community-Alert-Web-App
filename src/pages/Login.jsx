@@ -1,13 +1,12 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
-import FacebookLogin from 'react-facebook-login';
 import { useAuth } from '../context/AuthContext';
 import './Login.css';
 
 const Login = () => {
   const navigate = useNavigate();
-  const { isAuthenticated, handleGoogleLogin, handleFacebookLogin } = useAuth();
+  const { isAuthenticated, handleGoogleLogin } = useAuth();
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -35,17 +34,6 @@ const Login = () => {
                 theme="filled_blue"
                 size="large"
                 width="100%"
-              />
-            </div>
-
-            <div className="facebook-login-wrapper">
-              <FacebookLogin
-                appId={import.meta.env.VITE_FACEBOOK_APP_ID || '1234567890'}
-                autoLoad={false}
-                fields="name,email,picture"
-                callback={handleFacebookLogin}
-                cssClass="facebook-login-button"
-                icon="fa-facebook"
               />
             </div>
           </div>
