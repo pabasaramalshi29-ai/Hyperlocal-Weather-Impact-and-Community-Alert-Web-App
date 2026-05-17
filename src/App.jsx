@@ -24,8 +24,25 @@ const ProtectedRoute = ({ children }) => {
 function AppContent() {
   const { isAuthenticated, loading } = useAuth();
 
+  console.log('AppContent rendering - loading:', loading, 'isAuthenticated:', isAuthenticated);
+
   if (loading) {
-    return <div className="loading">Loading...</div>;
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+        color: '#60a5fa',
+        fontSize: '1.5rem',
+        fontWeight: '600',
+        flexDirection: 'column'
+      }}>
+        <div style={{ fontSize: '3rem', marginBottom: '20px' }}>⚡</div>
+        <p>Loading Application...</p>
+      </div>
+    );
   }
 
   return (
@@ -66,6 +83,7 @@ function AppContent() {
             </ProtectedRoute>
           }
         />
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </Router>
   );
@@ -73,6 +91,8 @@ function AppContent() {
 
 function App() {
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '1234567890.apps.googleusercontent.com';
+
+  console.log('App rendered, Google Client ID:', googleClientId);
 
   return (
     <GoogleOAuthProvider clientId={googleClientId}>

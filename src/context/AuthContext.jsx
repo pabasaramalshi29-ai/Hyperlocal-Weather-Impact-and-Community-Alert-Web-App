@@ -23,7 +23,12 @@ export const AuthProvider = ({ children }) => {
       }
       setLoading(false);
     };
-    checkAuth();
+    
+    // Ensure loading completes even if there's a delay
+    const timer = setTimeout(checkAuth, 100);
+    checkAuth(); // Also run immediately
+    
+    return () => clearTimeout(timer);
   }, []);
 
   const handleGoogleLogin = (credentialResponse) => {
