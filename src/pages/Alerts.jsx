@@ -8,7 +8,7 @@ const Alerts = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Firestore එකෙන් අලුත්ම දත්ත realtime කියවීම
+    // Read the latest data from Firestore in real time
     const q = query(collection(db, "alerts"), orderBy("createdAt", "desc"));
     
     const unsubscribe = onSnapshot(q, (snapshot) => {

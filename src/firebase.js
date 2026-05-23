@@ -2,7 +2,7 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
-// ඔයාගේ සැබෑ Firebase Configuration එක
+//  Firebase Configuration 
 const firebaseConfig = {
   apiKey: "AIzaSyBuBwo4fMVjzDGw6kA5faJl7dF5RcNbuVE",
   authDomain: "hyperweather-696c8.firebaseapp.com",
@@ -16,8 +16,8 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// ⚠️ අර බ්ලොක් වෙන 'getAnalytics' පේළිය මෙතනින් සම්පූර්ණයෙන්ම අයින් කරලා තියෙන්නේ.
 
-// Export Firestore Database (Alerts සහ Map පිටුවලට දත්ත යන්න මේක අනිවාර්යයි)
+
+// Export Firestore Database 
 export const db = getFirestore(app);
 

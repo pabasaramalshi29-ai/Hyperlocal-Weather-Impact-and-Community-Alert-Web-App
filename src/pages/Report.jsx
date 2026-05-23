@@ -8,7 +8,7 @@ const Report = () => {
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // 📍 Map එකෙන් තෝරාගන්නා Coordinates (Default: Kandy)
+  // 📍 Coordinates selected from the map (Default: Kandy)
   const [lat, setLat] = useState(7.2906);
   const [lng, setLng] = useState(80.6337);
 
@@ -16,7 +16,7 @@ const Report = () => {
   const miniMapInstance = useRef(null);
   const clickMarkerRef = useRef(null);
 
-  // Report පිටුවේ ලස්සනට Mini Map එකක් සෑදීම
+  // Creating a beautiful Mini Map on the Report page
   useEffect(() => {
     if (miniMapRef.current && !miniMapInstance.current) {
       miniMapInstance.current = L.map(miniMapRef.current).setView([7.2906, 80.6337], 7);
@@ -24,11 +24,10 @@ const Report = () => {
       L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
         attribution: '&copy; OpenStreetMap contributors'
       }).addTo(miniMapInstance.current);
-
-      // Default marker එකක් දානවා
+// Insert a default marker
       clickMarkerRef.current = L.marker([7.2906, 80.6337]).addTo(miniMapInstance.current);
 
-      // 🔴 සිතියම ක්ලික් කරද්දී coordinates වෙනස් කර marker එක එතනට ගන්නවා
+      // 🔴When you click on the map, the coordinates change and the marker is placed there.
       miniMapInstance.current.on('click', (e) => {
         const { lat, lng } = e.latlng;
         setLat(lat);
@@ -52,15 +51,15 @@ const Report = () => {
     setIsSubmitting(true);
     
     try {
-      // 🚀 Firestore එකට දත්ත යැවීම (දැන් map එකෙන් ක්ලික් කරපු සැබෑ ස්ථානයත් එක්කම යනවා)
+      // 🚀Sending data to Firestore (now goes with the actual location clicked on the map)
       await addDoc(collection(db, "alerts"), {
         title: "Community Report",
-        loc: formData.location,               // ඔයා ටයිප් කරන ලොකේෂන් එක
+        loc: formData.location,               // The location you are typing in.
         description: formData.description,
         severity: "medium",                   // Default severity
         location: {
-          lat: parseFloat(lat),               // මැප් එකෙන් ගත්තු Latitude එක
-          lng: parseFloat(lng)                // මැප් එකෙන් ගත්තු Longitude එක
+          lat: parseFloat(lat),               // Latitude taken from the map
+          lng: parseFloat(lng)                // Longitude taken from the map
         },
         createdAt: serverTimestamp()
       });
@@ -100,10 +99,10 @@ const Report = () => {
           </div>
         )}
 
-        {/* 🛠️ ඔයාගේ UI එක එහෙමම තියාගෙන Grid එකක් මඟින් දකුණු පැත්තෙන් මැප් එක දමා ඇත */}
+        {/* 🛠️The UI has been kept the same and the map has been placed on the right side using a grid. */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px', maxWidth: '900px', margin: '0 auto', alignItems: 'start' }}>
           
-          {/* වම් පැත්ත: ඔයාගේ පරණ ලස්සන Form එක */}
+          {/* Left side form */}
           <form className="report-form" onSubmit={handleSubmit} style={{ width: '100%', maxWidth: 'none', margin: '0' }}>
             <div className="form-group">
               <input 
@@ -157,7 +156,7 @@ const Report = () => {
             </button>
           </form>
 
-          {/* දකුණු පැත්ත: අලුතින් එකතු කල Mini Map එක */}
+          {/*Right side Mini Map */}
           <div style={{ background: '#1e293b', padding: '16px', borderRadius: '12px', border: '1px solid #334155' }}>
             <label style={{ color: '#94a3b8', fontSize: '0.9rem', marginBottom: '10px', display: 'block' }}>
               <i className="fas fa-map-pin"></i> Click on the map to mark the exact spot:

@@ -1,14 +1,14 @@
 import { useEffect, useRef } from 'react';
-import { db } from '../firebase'; // Firebase config එක import කරගන්න
+import { db } from '../firebase'; 
 import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 
 const MapPage = () => {
   const mapRef = useRef(null);
   const mapInstance = useRef(null);
-  const markersRef = useRef([]); // පරණ markers clean කරලා අලුත් ඒවා දාන්න reference එකක්
+  const markersRef = useRef([]); 
 
   useEffect(() => {
-    // 1. Map එක මුලින්ම Initialize කිරීම (ඔයාගේ මුල් කෝඩ් එකමයි)
+    // 1. Initializing the map firstMap එක මුලින්ම Initialize කිරීම 
     if (mapRef.current && !mapInstance.current) {
       mapInstance.current = L.map(mapRef.current).setView([7.8731, 80.7718], 8);
 
@@ -18,21 +18,21 @@ const MapPage = () => {
       }).addTo(mapInstance.current);
     }
 
-    // 2. Firebase Firestore එකෙන් Realtime Alerts ලබාගෙන Map එකට එකතු කිරීම
+    // 2. Retrieving Realtime Alerts from Firebase Firestore and Adding It to the Map
     const q = query(collection(db, "alerts"), orderBy("createdAt", "desc"));
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
       if (!mapInstance.current) return;
 
-      // කලින් map එකේ තිබ්බ පරණ markers ඔක්කොම අයින් කරනවා (duplicates නොවෙන්න)
+      // All old markers on the previous map will be removed (to avoid duplicates).
       markersRef.current.forEach(marker => mapInstance.current.removeLayer(marker));
       markersRef.current = [];
 
-      // Firebase එකෙන් එන හැම alert එකක්ම map එකට Marker එකක් විදිහට දානවා
+      // FEvery alert from Firebase is placed as a marker on the map.
       snapshot.forEach((doc) => {
         const alertData = doc.data();
 
-        // Object එක ඇතුලේ location data (lat, lng) තියෙනවද කියලා check කරනවා
+        //Checks if the object contains location data (lat, lng)
         if (alertData.location && alertData.location.lat && alertData.location.lng) {
           const lat = alertData.location.lat;
           const lng = alertData.location.lng;
@@ -40,7 +40,7 @@ const MapPage = () => {
           const description = alertData.description || "";
           const type = alertData.type || alertData.severity || "Warning";
 
-          // අලුත් Leaflet Marker එකක් හදනවා
+          // Creating a new Leaflet Marker
           const marker = L.marker([lat, lng])
             .addTo(mapInstance.current)
             .bindPopup(`
@@ -51,7 +51,7 @@ const MapPage = () => {
               </div>
             `);
 
-          // පස්සේ අයින් කරන්න පුළුවන් වෙන්න marker එක array එකට දාගන්නවා
+          // The marker is placed in the array so that it can be removed later.
           markersRef.current.push(marker);
         }
       });
@@ -59,7 +59,7 @@ const MapPage = () => {
       console.error("Error fetching firebase map markers: ", error);
     });
 
-    // Component එක close වෙද්දී map එක සහ firebase listener එක clear කරනවා
+    //When the component closes, the map and firebase listener are cleared.
     return () => {
       unsubscribe();
       if (mapInstance.current) {
@@ -75,7 +75,7 @@ const MapPage = () => {
     }
   };
 
-  // ඔයාගේ මුල් UI එක (HTML/CSS) කිසිම වෙනසක් කර නැත.
+
   return (
     <section className="map-section">
       <div className="container">
