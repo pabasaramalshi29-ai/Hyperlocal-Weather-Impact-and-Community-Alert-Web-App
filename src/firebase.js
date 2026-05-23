@@ -1,11 +1,8 @@
-// Import the functions you need from the SDKs you need
+// src/firebase.js
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { getFirestore } from "firebase/firestore";
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// ඔයාගේ සැබෑ Firebase Configuration එක
 const firebaseConfig = {
   apiKey: "AIzaSyBuBwo4fMVjzDGw6kA5faJl7dF5RcNbuVE",
   authDomain: "hyperweather-696c8.firebaseapp.com",
@@ -18,6 +15,9 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
 
+// ⚠️ අර බ්ලොක් වෙන 'getAnalytics' පේළිය මෙතනින් සම්පූර්ණයෙන්ම අයින් කරලා තියෙන්නේ.
+
+// Export Firestore Database (Alerts සහ Map පිටුවලට දත්ත යන්න මේක අනිවාර්යයි)
 export const db = getFirestore(app);
+

@@ -1,25 +1,20 @@
 // pages/Alerts.jsx
 import { useEffect, useState } from 'react';
-import { db } from '../firebase'; // Firebase config එක import කරගන්න
+import { db } from '../firebase'; 
 import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 
 const Alerts = () => {
-  // Firebase එකෙන් එන alerts save කරගන්න state එකක්
   const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 'alerts' collection එකෙන් අලුත්ම ඒවා උඩට එන විදිහට query එක හදනවා
+    // Firestore එකෙන් අලුත්ම දත්ත realtime කියවීම
     const q = query(collection(db, "alerts"), orderBy("createdAt", "desc"));
     
-    // Realtime සන්නිවේදනය (onSnapshot) ආරම්භ කිරීම
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const fetchedAlerts = snapshot.forEach ? [] : [];
-      
       const data = snapshot.docs.map(doc => {
         const docData = doc.data();
         
-        // වෙලාව ලස්සනට පේන්න හදාගන්න එක (createdAt එක Firebase timestamp එකක් නිසා)
         let formattedTime = "Just now";
         if (docData.createdAt) {
           const date = docData.createdAt.toDate();
@@ -29,8 +24,8 @@ const Alerts = () => {
         return {
           id: doc.id,
           title: docData.title || "No Title",
-          severity: docData.severity || "medium", // Firebase එකේ severity නැත්නම් default medium වැටේ
-          loc: docData.loc || (docData.location ? `${docData.location.lat.toFixed(2)}, ${docData.location.lng.toFixed(2)}` : "Unknown Location"),
+          severity: docData.severity || "medium",
+          loc: docData.loc || "Unknown Location",
           time: formattedTime,
           description: docData.description || "No description provided."
         };
@@ -43,7 +38,6 @@ const Alerts = () => {
       setLoading(false);
     });
 
-    // Component එක close වෙද්දී connection එක අයින් කරන්න
     return () => unsubscribe();
   }, []);
 
@@ -58,7 +52,6 @@ const Alerts = () => {
           <p style={{ color: '#94a3b8', textAlign: 'center' }}>No alerts reported yet.</p>
         ) : (
           <div className="alerts-list">
-            {/* මෙතන ඔයාගේ කලින් තිබ්බ HTML Structure එකමයි තියෙන්නේ, alertData වෙනුවට alerts use කරලා තියෙන්නේ */}
             {alerts.map(alert => (
               <div key={alert.id} className="alert-card">
                 <div className="alert-header">
