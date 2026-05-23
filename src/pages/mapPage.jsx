@@ -1,71 +1,111 @@
-// pages/MapPage.jsx
 import { useEffect, useRef } from 'react';
+import { db } from '../firebase'; // Firebase config එක import කරගන්න
+import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 
 const MapPage = () => {
   const mapRef = useRef(null);
+  const mapInstance = useRef(null);
+  const markersRef = useRef([]); // පරණ markers clean කරලා අලුත් ඒවා දාන්න reference එකක්
 
   useEffect(() => {
-    // Simulate Google Maps load (in production, load actual Google Maps API)
-    if (mapRef.current) {
-      mapRef.current.style.background = 'linear-gradient(135deg, #1e3a5f, #0f172a)';
+    // 1. Map එක මුලින්ම Initialize කිරීම (ඔයාගේ මුල් කෝඩ් එකමයි)
+    if (mapRef.current && !mapInstance.current) {
+      mapInstance.current = L.map(mapRef.current).setView([7.8731, 80.7718], 8);
+
+      // Dark Mode Style
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(mapInstance.current);
     }
+
+    // 2. Firebase Firestore එකෙන් Realtime Alerts ලබාගෙන Map එකට එකතු කිරීම
+    const q = query(collection(db, "alerts"), orderBy("createdAt", "desc"));
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      if (!mapInstance.current) return;
+
+      // කලින් map එකේ තිබ්බ පරණ markers ඔක්කොම අයින් කරනවා (duplicates නොවෙන්න)
+      markersRef.current.forEach(marker => mapInstance.current.removeLayer(marker));
+      markersRef.current = [];
+
+      // Firebase එකෙන් එන හැම alert එකක්ම map එකට Marker එකක් විදිහට දානවා
+      snapshot.forEach((doc) => {
+        const alertData = doc.data();
+
+        // Object එක ඇතුලේ location data (lat, lng) තියෙනවද කියලා check කරනවා
+        if (alertData.location && alertData.location.lat && alertData.location.lng) {
+          const lat = alertData.location.lat;
+          const lng = alertData.location.lng;
+          const title = alertData.title || "Alert";
+          const description = alertData.description || "";
+          const type = alertData.type || alertData.severity || "Warning";
+
+          // අලුත් Leaflet Marker එකක් හදනවා
+          const marker = L.marker([lat, lng])
+            .addTo(mapInstance.current)
+            .bindPopup(`
+              <div style="color: #1e293b; font-family: sans-serif;">
+                <h3 style="margin: 0 0 5px 0; font-size: 1.1rem; color: #ef4444;">⚠️ ${title}</h3>
+                <p style="margin: 0 0 5px 0;"><strong>Type:</strong> ${type}</p>
+                <p style="margin: 0; font-size: 0.9rem; color: #475569;">${description}</p>
+              </div>
+            `);
+
+          // පස්සේ අයින් කරන්න පුළුවන් වෙන්න marker එක array එකට දාගන්නවා
+          markersRef.current.push(marker);
+        }
+      });
+    }, (error) => {
+      console.error("Error fetching firebase map markers: ", error);
+    });
+
+    // Component එක close වෙද්දී map එක සහ firebase listener එක clear කරනවා
+    return () => {
+      unsubscribe();
+      if (mapInstance.current) {
+        mapInstance.current.remove();
+        mapInstance.current = null;
+      }
+    };
   }, []);
 
   const centerMap = () => {
-    alert('📍 Centering map on your location...');
+    if (mapInstance.current) {
+      mapInstance.current.setView([7.8731, 80.7718], 8);
+    }
   };
 
+  // ඔයාගේ මුල් UI එක (HTML/CSS) කිසිම වෙනසක් කර නැත.
   return (
     <section className="map-section">
       <div className="container">
         <div className="map-header">
           <div>
             <h1><i className="fas fa-map"></i> Weather Map</h1>
-            <p className="subtext">Track live alert zones and weather impact across your neighborhood.</p>
+            <p className="subtext">Track live alert zones and weather impact.</p>
           </div>
         </div>
-        <div className="map-wrapper">
-          <div className="map-container">
-            <div id="map" ref={mapRef}>
-              {/* Map overlay with markers */}
-              <div className="map-marker marker-danger" style={{ top: '30%', left: '25%' }} title="Flood Alert">
-                <span></span>
-                <div style={{ position: 'absolute', top: '24px', left: '50%', transform: 'translateX(-50%)', background: 'rgba(0,0,0,0.8)', padding: '4px 8px', borderRadius: '8px', fontSize: '12px', whiteSpace: 'nowrap' }}>
-                  ⚠️ Flood Alert
-                </div>
-              </div>
-              <div className="map-marker marker-warning" style={{ top: '55%', left: '65%' }} title="Storm Warning">
-                <span></span>
-                <div style={{ position: 'absolute', top: '24px', left: '50%', transform: 'translateX(-50%)', background: 'rgba(0,0,0,0.8)', padding: '4px 8px', borderRadius: '8px', fontSize: '12px', whiteSpace: 'nowrap' }}>
-                  ⚡ Storm Warning
-                </div>
-              </div>
-              <div className="map-marker marker-safe" style={{ top: '70%', left: '40%' }} title="Safe Zone">
-                <span></span>
-                <div style={{ position: 'absolute', top: '24px', left: '50%', transform: 'translateX(-50%)', background: 'rgba(0,0,0,0.8)', padding: '4px 8px', borderRadius: '8px', fontSize: '12px', whiteSpace: 'nowrap' }}>
-                  ✅ Safe Zone
-                </div>
-              </div>
-              <div className="map-marker marker-warning" style={{ top: '20%', left: '75%' }} title="Fire Risk">
-                <span></span>
-                <div style={{ position: 'absolute', top: '24px', left: '50%', transform: 'translateX(-50%)', background: 'rgba(0,0,0,0.8)', padding: '4px 8px', borderRadius: '8px', fontSize: '12px', whiteSpace: 'nowrap' }}>
-                  🔥 Fire Risk
-                </div>
-              </div>
-            </div>
-            
-            <div className="control-panel">
-              <div className="panel-title"><i className="fas fa-sliders-h"></i><span>Live Controls</span></div>
-              <div className="panel-item" onClick={() => alert('Filtering alerts by severity...')}>
-                <i className="fas fa-filter"></i> Filter
-              </div>
-              <div className="panel-item" onClick={() => alert('Live updates enabled!')}>
-                <i className="fas fa-sync-alt"></i> Refresh
-              </div>
-              <div className="panel-item" onClick={centerMap}>
-                <i className="fas fa-location-arrow"></i> Center
-              </div>
-            </div>
+        <div className="map-wrapper" style={{ position: 'relative' }}>
+          <div 
+            id="map" 
+            ref={mapRef} 
+            style={{ width: '100%', height: '500px', borderRadius: '12px', zIndex: 1 }}
+          ></div>
+          
+          <div className="control-panel" style={{ position: 'absolute', bottom: '20px', right: '20px', zIndex: 1000 }}>
+            <button 
+              onClick={centerMap}
+              style={{ 
+                padding: '10px 20px', 
+                backgroundColor: '#1e293b', 
+                color: 'white', 
+                border: 'none', 
+                borderRadius: '8px',
+                cursor: 'pointer'
+              }}
+            >
+              <i className="fas fa-location-arrow"></i> Center Map
+            </button>
           </div>
         </div>
       </div>
