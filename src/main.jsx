@@ -1,5 +1,4 @@
 import { StrictMode } from 'react'
-import { useTranslation } from 'react-i18next';
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
