@@ -1,11 +1,11 @@
 // pages/Alerts.jsx
 import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+
 import { db } from '../firebase'; 
 import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 
 const Alerts = () => {
-  const { t } = useTranslation();
+
   const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(true);
 

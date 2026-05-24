@@ -1,9 +1,9 @@
 // pages/Home.jsx
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+
 
 const Home = () => {
-  const { t } = useTranslation();
+  
   const [location, setLocation] = useState('');
   const [searchMessage, setSearchMessage] = useState('');
 

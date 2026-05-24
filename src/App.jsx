@@ -1,4 +1,3 @@
-import './i18n'; 
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -13,7 +12,6 @@ import './App.css';
 
 // ProtectedRoute component to check authentication
 const ProtectedRoute = ({ children }) => {
-  const { t } = useTranslation();
   const { isAuthenticated, loading } = useAuth();
 
   if (loading) {
