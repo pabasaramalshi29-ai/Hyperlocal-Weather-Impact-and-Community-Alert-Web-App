@@ -27,10 +27,10 @@ const Navbar = () => {
         </div>
         <ul className="nav-menu">
           {/* 🌍  t()  */}
-          <li><NavLink to="/" end className={({ isActive }) => isActive ? 'active' : ''}>{t('nav_home')}</NavLink></li>
-          <li><NavLink to="/map" className={({ isActive }) => isActive ? 'active' : ''}>{t('nav_map')}</NavLink></li>
-          <li><NavLink to="/alerts" className={({ isActive }) => isActive ? 'active' : ''}>{t('nav_alerts')}</NavLink></li>
-          <li><NavLink to="/report" className={({ isActive }) => isActive ? 'active' : ''}>{t('nav_report')}</NavLink></li>
+          <li><NavLink to="/" end className={({ isActive }) => isActive ? 'active' : ''}>{t('home')}</NavLink></li>
+          <li><NavLink to="/map" className={({ isActive }) => isActive ? 'active' : ''}>{t('map')}</NavLink></li>
+          <li><NavLink to="/alerts" className={({ isActive }) => isActive ? 'active' : ''}>{t('alerts')}</NavLink></li>
+          <li><NavLink to="/report" className={({ isActive }) => isActive ? 'active' : ''}>{t('report')}</NavLink></li>
         </ul>
         
         {/* 🌍  Language Selector Dropdown */}
