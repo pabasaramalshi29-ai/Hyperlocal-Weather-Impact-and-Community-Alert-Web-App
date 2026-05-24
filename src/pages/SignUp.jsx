@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 import FacebookLogin from 'react-facebook-login';
@@ -8,6 +9,7 @@ import './SignUp.css';
 const SignUp = () => {
   const navigate = useNavigate();
   const { isAuthenticated, handleGoogleLogin, handleFacebookLogin } = useAuth();
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',

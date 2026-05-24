@@ -13,6 +13,7 @@ import './App.css';
 
 // ProtectedRoute component to check authentication
 const ProtectedRoute = ({ children }) => {
+  const { t } = useTranslation();
   const { isAuthenticated, loading } = useAuth();
 
   if (loading) {

@@ -1,8 +1,10 @@
 import { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { db } from '../firebase'; 
 import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 
 const MapPage = () => {
+  const { t } = useTranslation();
   const mapRef = useRef(null);
   const mapInstance = useRef(null);
   const markersRef = useRef([]); 

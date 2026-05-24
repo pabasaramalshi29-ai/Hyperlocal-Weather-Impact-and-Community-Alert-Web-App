@@ -1,9 +1,11 @@
 // pages/Report.jsx
 import { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { db } from '../firebase'; 
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 const Report = () => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({ location: '', description: '', file: null });
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
