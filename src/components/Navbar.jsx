@@ -47,6 +47,11 @@ const Navbar = () => {
               <i className="fas fa-edit"></i> Report
             </NavLink>
           </li>
+          <li>
+            <NavLink to="/Register" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+              <i className="fas fa-edit"></i> Register
+            </NavLink>
+          </li>
         </ul>
         
         {/* Right Side: User Profile & Dropdown */}
