@@ -5,7 +5,7 @@ const Home = () => {
   const [location, setLocation] = useState('');
   const [searchMessage, setSearchMessage] = useState('');
 
-  // 🌡️ Celsius (°C), Precipitation, Humidity, සහ Wind දත්ත තබා ගන්නා State එක
+  // 🌡️ Celsius (°C), Precipitation, Humidity, Wind  State
   const [weatherData, setWeatherData] = useState({
     cityName: 'Colombo, LK', 
     temp: '30°C',
@@ -14,15 +14,15 @@ const Home = () => {
     wind: '8 km/h'       
   });
 
-  // 📍 ඇප් එක ඕපන් කරපු ගමන් Default ලංකාවේ ලොකේෂන් එකක් ලෝඩ් කරගැනීම (Crash නොවෙන්න)
+  // 📍 
   useEffect(() => {
     const fetchLocalWeather = async () => {
       try {
-        // IP එකෙන් නගරය බැලීම
+        // IP එ
         const geoRes = await fetch('https://ipapi.co/json/');
         const geoData = await geoRes.json();
         
-        // ලොකේෂන් එක ආවේ නැත්නම් Default Colombo ගන්නවා
+      
         const lat = geoData.latitude || 6.9271;
         const lon = geoData.longitude || 79.8612;
         const currentCity = geoData.city ? `${geoData.city}, ${geoData.country_code}` : 'Colombo, LK';
@@ -43,7 +43,7 @@ const Home = () => {
         }
       } catch (error) {
         console.error("Error fetching live weather:", error);
-        // මොනවා හරි අවුලක් වුනොත් Default පෙන්වන්න
+        
         setWeatherData({
           cityName: 'Colombo, LK',
           temp: '29°C',
@@ -57,7 +57,7 @@ const Home = () => {
     fetchLocalWeather();
   }, []);
 
-  // 🔍 ලංකාවේ ඕනෑම නගරයක් (Rathnapura, Gampaha ආදී) 100% ක්ම අහුවෙන සුපිරි සර්ච් එක
+  // 🔍 (Rathnapura, Gampaha)
   const handleSearch = async () => {
     if (!location.trim()) {
       setSearchMessage('Please enter a location');
@@ -68,7 +68,7 @@ const Home = () => {
     setSearchMessage(`Searching for weather in ${location}...`);
     
     try {
-      // 🇱🇰 මෙතනදී අපි countrycodes=lk දාලා තියෙන නිසා රත්නපුරේ අනිවාර්යයෙන්ම අහුවෙනවා මචං!
+      // 🇱🇰  countrycodes=lk 
       const geoRes = await fetch(
         `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}&countrycodes=lk&limit=1`,
         {
@@ -82,11 +82,11 @@ const Home = () => {
       if (geoData && geoData.length > 0) {
         const result = geoData[0];
         
-        // නගරයේ නම කෙටියෙන් සකසා ගැනීම
+      
         const nameParts = result.display_name.split(',');
         const cleanName = `${nameParts[0]}, Sri Lanka`;
         
-        // Open-Meteo එකෙන් කාලගුණ දත්ත ලබාගැනීම
+        // Open-Meteo 
         const weatherRes = await fetch(
           `https://api.open-meteo.com/v1/forecast?latitude=${result.lat}&longitude=${result.lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,precipitation`
         );
