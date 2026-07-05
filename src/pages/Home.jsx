@@ -18,7 +18,7 @@ const Home = () => {
   useEffect(() => {
     const fetchLocalWeather = async () => {
       try {
-        // IP එ
+        // IP 
         const geoRes = await fetch('https://ipapi.co/json/');
         const geoData = await geoRes.json();
         
