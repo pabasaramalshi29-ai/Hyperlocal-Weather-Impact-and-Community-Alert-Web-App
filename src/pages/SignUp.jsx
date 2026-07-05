@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
-import FacebookLogin from 'react-facebook-login';
+import { FacebookLogin } from 'react-facebook-login';
 import { useAuth } from '../context/AuthContext';
 import './SignUp.css';
 
@@ -126,13 +126,13 @@ const SignUp = () => {
 
             <div className="facebook-signup-wrapper">
               <FacebookLogin
-                appId={import.meta.env.VITE_FACEBOOK_APP_ID || '1234567890'}
-                autoLoad={false}
-                fields="name,email,picture"
-                callback={handleFacebookLogin}
-                cssClass="facebook-signup-button"
-                icon="fa-facebook"
-              />
+        appId={import.meta.env.VITE_FACEBOOK_APP_ID || '1234567890'}
+        autoLoad={false}
+       fields="name,email,picture"
+       callback={handleFacebookLogin}
+      cssClass="facebook-signup-button"
+      icon="fa-facebook"
+      />
             </div>
           </div>
 
