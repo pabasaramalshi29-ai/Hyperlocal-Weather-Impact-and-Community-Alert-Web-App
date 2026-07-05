@@ -164,7 +164,7 @@ const Home = () => {
           <div className="weather-card">
             <h2><i className="fas fa-cloud-sun"></i> Current Weather</h2>
             <div className="weather-info">
-              {/* 🌡️ Google Weather විදිහටම Precipitation, Humidity, Wind ටික මෙන්න මචං */}
+              {/* 🌡️ Google Weather  Precipitation, Humidity, Wind  */}
               <div className="temp"><i className="fas fa-thermometer-half"></i> <span>{weatherData.temp}</span></div>
               <div className="rain"><i className="fas fa-cloud-rain"></i> <span>Precipitation: {weatherData.precipitation}</span></div>
               <div className="humidity" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#cbd5e1', fontSize: '1.1rem' }}>
