@@ -2,7 +2,7 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
-//  Firebase Configuration 
+
 const firebaseConfig = {
   apiKey: "AIzaSyBuBwo4fMVjzDGw6kA5faJl7dF5RcNbuVE",
   authDomain: "hyperweather-696c8.firebaseapp.com",
@@ -13,11 +13,5 @@ const firebaseConfig = {
   measurementId: "G-BM0ZRVNWGF"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-
-
-
-// Export Firestore Database 
 export const db = getFirestore(app);
-

@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { db } from '../firebase'; 
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { SRI_LANKA_CITIES } from '../data/cities';
 
 const Report = () => {
   const [formData, setFormData] = useState({ location: '', description: '', file: null });
@@ -46,39 +47,37 @@ const Report = () => {
     };
   }, []);
 
-  const handleSubmit = async (e) => {
+ const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     
     try {
-      // 🚀Sending data to Firestore (now goes with the actual location clicked on the map)
-      await addDoc(collection(db, "alerts"), {
+      console.log("දත්ත යැවීමට උත්සාහ කරයි...");
+      const docRef = await addDoc(collection(db, "alerts"), {
         title: "Community Report",
-        loc: formData.location,               // The location you are typing in.
         description: formData.description,
-        severity: "medium",                   // Default severity
-        location: {
-          lat: parseFloat(lat),               // Latitude taken from the map
-          lng: parseFloat(lng)                // Longitude taken from the map
-        },
-        createdAt: serverTimestamp()
+        location: { lat, lng },
+        locationName: formData.location,
+        status: "pending", 
+        reportCount: 1,    
+        severity: "medium", 
+        createdAt: serverTimestamp(),
       });
-
+      console.log("සාර්ථකයි! Document ID:", docRef.id);
+      
       setSubmitted(true);
       setFormData({ location: '', description: '', file: null });
-      
-      const fileInput = document.getElementById('image');
-      if (fileInput) fileInput.value = '';
-      
       setTimeout(() => setSubmitted(false), 3000);
-    } catch (error) {
-      console.error("Error submitting report:", error);
-      alert("Something went wrong!");
+      
+    }catch (error) {
+  console.log("Error object:", error);
+  alert("ඇත්තටම දත්ත යැවීමට බැරි වුණේ මේ හේතුව නිසා: " + error.message);
+
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false); // මේක අනිවාර්යයෙන්ම වැදගත්
+      console.log("Submitting process finished.");
     }
   };
-
   return (
     <section className="report-section">
       <div className="container">
@@ -104,33 +103,34 @@ const Report = () => {
           
           {/* Left side form */}
           <form className="report-form" onSubmit={handleSubmit} style={{ width: '100%', maxWidth: 'none', margin: '0' }}>
-            <div className="form-group">
-              <input 
-                type="text" 
-                id="location" 
-                placeholder=" " 
-                value={formData.location}
-                onChange={(e) => setFormData({...formData, location: e.target.value})}
-                required 
-              />
-              <label htmlFor="location">
-                <i className="fas fa-map-marker-alt"></i> Location
-              </label>
-            </div>
-            
+           <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+  <label style={{ color: 'white', display: 'flex', alignItems: 'center', gap: '5px' }}>
+    <i className="fas fa-map-marker-alt"></i> Location
+  </label>
+  
+  <select 
+    onChange={(e) => setFormData({...formData, location: e.target.value})}
+    required
+    style={{ padding: '10px', borderRadius: '8px', width: '100%' }}
+  >
+    <option value="">Select a City</option>
+    {SRI_LANKA_CITIES.map(city => (
+      <option key={city} value={city}>{city}</option>
+    ))}
+  </select>
+</div>
             <div className="form-group">
               <textarea 
                 id="description" 
                 placeholder=" "
                 value={formData.description}
-                onChange={(e) => setFormData({...formData, description: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 required
-              ></textarea>
+              />
               <label htmlFor="description">
                 <i className="fas fa-info-circle"></i> Description
               </label>
             </div>
-            
             <div className="form-group">
               <input 
                 type="file" 

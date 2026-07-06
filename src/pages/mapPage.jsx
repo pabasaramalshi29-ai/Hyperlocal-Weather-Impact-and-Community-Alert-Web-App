@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { db } from '../firebase'; 
-import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { collection, onSnapshot, query, orderBy, where } from 'firebase/firestore';
 
 const MapPage = () => {
   const mapRef = useRef(null);
@@ -8,7 +8,14 @@ const MapPage = () => {
   const markersRef = useRef([]); 
 
   useEffect(() => {
-    // 1. Initializing the map firstMap එක මුලින්ම Initialize කිරීම 
+    
+    delete L.Icon.Default.prototype._getIconUrl;
+    L.Icon.Default.mergeOptions({
+      iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+      iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png'
+    });
+    
     if (mapRef.current && !mapInstance.current) {
       mapInstance.current = L.map(mapRef.current).setView([7.8731, 80.7718], 8);
 
@@ -19,62 +26,61 @@ const MapPage = () => {
     }
 
     // 2. Retrieving Realtime Alerts from Firebase Firestore and Adding It to the Map
-    const q = query(collection(db, "alerts"), orderBy("createdAt", "desc"));
-
+    const q = query(
+      collection(db, "alerts"),
+      where("status", "==", "confirmed"),
+      orderBy("createdAt", "desc")
+    );
     const unsubscribe = onSnapshot(q, (snapshot) => {
       if (!mapInstance.current) return;
-
-      // All old markers on the previous map will be removed (to avoid duplicates).
-      markersRef.current.forEach(marker => mapInstance.current.removeLayer(marker));
-      markersRef.current = [];
-
-      // FEvery alert from Firebase is placed as a marker on the map.
       snapshot.forEach((doc) => {
-        const alertData = doc.data();
-
-        //Checks if the object contains location data (lat, lng)
+  const alertData = doc.data();
+  console.log("Alert Data:", alertData);
         if (alertData.location && alertData.location.lat && alertData.location.lng) {
-          const lat = alertData.location.lat;
-          const lng = alertData.location.lng;
+          const { lat, lng } = alertData.location;
           const title = alertData.title || "Alert";
           const description = alertData.description || "";
-          const type = alertData.type || alertData.severity || "Warning";
 
-          // Creating a new Leaflet Marker
-          const marker = L.marker([lat, lng])
+          const customIcon = L.icon({
+          iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+          iconSize: [25, 41],
+          iconAnchor: [12, 41]});
+
+          const marker = L.marker([lat, lng]).addTo(mapInstance.current)
             .addTo(mapInstance.current)
             .bindPopup(`
               <div style="color: #1e293b; font-family: sans-serif;">
-                <h3 style="margin: 0 0 5px 0; font-size: 1.1rem; color: #ef4444;">⚠️ ${title}</h3>
-                <p style="margin: 0 0 5px 0;"><strong>Type:</strong> ${type}</p>
-                <p style="margin: 0; font-size: 0.9rem; color: #475569;">${description}</p>
+                <h3 style="margin: 0 0 5px 0; color: #ef4444;">⚠️ ${title}</h3>
+                <p style="margin: 0 0 5px 0;"><strong>Location:</strong> ${lat.toFixed(4)}, ${lng.toFixed(4)}</p>
+                <p style="margin: 0;">${description}</p>
               </div>
             `);
+            console.log("Marker added at:", lat, lng); 
+            markersRef.current.push(marker);
 
-          // The marker is placed in the array so that it can be removed later.
           markersRef.current.push(marker);
         }
       });
     }, (error) => {
-      console.error("Error fetching firebase map markers: ", error);
+      console.error("Error fetching map markers: ", error);
     });
 
-    //When the component closes, the map and firebase listener are cleared.
     return () => {
-      unsubscribe();
-      if (mapInstance.current) {
-        mapInstance.current.remove();
-        mapInstance.current = null;
+      if (unsubscribe) {
+        unsubscribe();
       }
     };
   }, []);
-
+setTimeout(() => {
+  if (mapInstance.current) {
+    mapInstance.current.invalidateSize();
+  }
+}, 500);
   const centerMap = () => {
     if (mapInstance.current) {
       mapInstance.current.setView([7.8731, 80.7718], 8);
     }
   };
-
 
   return (
     <section className="map-section">

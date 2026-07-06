@@ -1,76 +1,65 @@
 // pages/Alerts.jsx
 import { useEffect, useState } from 'react';
-
 import { db } from '../firebase'; 
-import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { collection, onSnapshot, query, orderBy, doc, updateDoc, increment } from 'firebase/firestore';
+import { SRI_LANKA_CITIES } from '../data/cities';
+
+const citiesList = ["All", ...SRI_LANKA_CITIES];
+<select >
+  <option value="All">All</option>
+  {SRI_LANKA_CITIES.map(city => <option key={city} value={city}>{city}</option>)}
+</select>
 
 const Alerts = () => {
-
   const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Read the latest data from Firestore in real time
     const q = query(collection(db, "alerts"), orderBy("createdAt", "desc"));
-    
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map(doc => {
-        const docData = doc.data();
-        
-        let formattedTime = "Just now";
-        if (docData.createdAt) {
-          const date = docData.createdAt.toDate();
-          formattedTime = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + " - " + date.toLocaleDateString();
-        }
-
-        return {
-          id: doc.id,
-          title: docData.title || "No Title",
-          severity: docData.severity || "medium",
-          loc: docData.loc || "Unknown Location",
-          time: formattedTime,
-          description: docData.description || "No description provided."
-        };
-      });
-
+      const data = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        reportCount: doc.data().reportCount || 1,
+        status: doc.data().status || "pending"
+      }));
       setAlerts(data);
       setLoading(false);
-    }, (error) => {
-      console.error("Error fetching realtime alerts:", error);
-      setLoading(false);
     });
-
     return () => unsubscribe();
   }, []);
+
+  const confirmAlert = async (id, currentCount) => {
+    const newCount = currentCount + 1;
+    await updateDoc(doc(db, "alerts", id), {
+      reportCount: newCount,
+      status: newCount >= 3 ? "confirmed" : "pending" // 3ක් වුනොත් Confirmed වේ[cite: 1]
+    });
+  };
 
   return (
     <section className="alerts-section">
       <div className="container">
-        <h1><i className="fas fa-bell"></i> Community Alerts</h1>
-        
-        {loading ? (
-          <p style={{ color: '#94a3b8', textAlign: 'center' }}>Loading live alerts...</p>
-        ) : alerts.length === 0 ? (
-          <p style={{ color: '#94a3b8', textAlign: 'center' }}>No alerts reported yet.</p>
-        ) : (
-          <div className="alerts-list">
-            {alerts.map(alert => (
-              <div key={alert.id} className="alert-card">
-                <div className="alert-header">
-                  <h3>{alert.title}</h3>
-                  <span className={`severity ${alert.severity}`}>
-                    <i className="fas fa-flag"></i> {alert.severity}
-                  </span>
-                </div>
-                <p><i className="fas fa-map-marker-alt"></i> {alert.loc}</p>
-                <p><i className="fas fa-clock"></i> {alert.time}</p>
-                <p style={{ marginTop: '8px', fontSize: '0.9rem', color: '#94a3b8' }}>
-                  {alert.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        )}
+        <h1>Community Alerts</h1>
+        <div className="alerts-list">
+          {alerts.map(alert => (
+           <div key={alert.id} className={`alert-card ${alert.status}`}>
+  <h3>{alert.title} - {alert.status.toUpperCase()}</h3>
+  <p style={{ color: '#cbd5e1', marginBottom: '5px' }}>{alert.description}</p>
+  
+  {/* Location එක පෙන්වීම */}
+  <p style={{ color: '#94a3b8', fontSize: '0.85rem' }}>
+  <i className="fas fa-map-marker-alt"></i> 
+  Location: {alert.locationName || (alert.location ? `${alert.location.lat.toFixed(2)}, ${alert.location.lng.toFixed(2)}` : "Unknown")}
+</p>
+  {alert.status === 'pending' && (
+    <button onClick={() => confirmAlert(alert.id, alert.reportCount)}>
+      <i className="fas fa-check-circle"></i> Verify this Disaster ({alert.reportCount}/3)
+    </button>
+  )}
+</div>
+          ))}
+        </div>
       </div>
     </section>
   );
