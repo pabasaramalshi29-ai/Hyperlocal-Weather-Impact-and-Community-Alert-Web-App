@@ -1,5 +1,5 @@
-// pages/Home.jsx
-import { useState, useEffect } from 'react';
+
+import { useState } from 'react';
 
 const Home = () => {
   const [location, setLocation] = useState('');
@@ -7,135 +7,35 @@ const Home = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // 🌡️ Celsius (°C), Precipitation, Humidity, Wind  State
-  const [weatherData, setWeatherData] = useState({
-    cityName: 'Colombo, LK', 
-    temp: '30°C',
-    precipitation: '10%', 
-    humidity: '72%',     
-    wind: '8 km/h'       
-  });
+  
+  const API_KEY = "dc8754a29ab20f1c66f1c660f4346f20"; 
 
-  // 📍 
-  useEffect(() => {
-    const fetchLocalWeather = async () => {
-      try {
-        // IP 
-        const geoRes = await fetch('https://ipapi.co/json/');
-        const geoData = await geoRes.json();
-        
-      
-        const lat = geoData.latitude || 6.9271;
-        const lon = geoData.longitude || 79.8612;
-        const currentCity = geoData.city ? `${geoData.city}, ${geoData.country_code}` : 'Colombo, LK';
-        
-        const weatherRes = await fetch(
-          `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,precipitation`
-        );
-        const data = await weatherRes.json();
-
-        if (data && data.current) {
-          setWeatherData({
-            cityName: currentCity,
-            temp: `${Math.round(data.current.temperature_2m)}°C`,
-            precipitation: data.current.precipitation > 0 ? `${Math.round(data.current.precipitation * 10)}%` : '0%',
-            humidity: `${data.current.relative_humidity_2m}%`,
-            wind: `${Math.round(data.current.wind_speed_10m)} km/h`
-          });
-        }
-      } catch (error) {
-        console.error("Error fetching live weather:", error);
-        
-        setWeatherData({
-          cityName: 'Colombo, LK',
-          temp: '29°C',
-          precipitation: '15%',
-          humidity: '78%',
-          wind: '10 km/h'
-        });
-      }
-    };
-
-    fetchLocalWeather();
-  }, []);
-
-  // 🔍 (Rathnapura, Gampaha)
   const handleSearch = async () => {
     if (!location.trim()) {
-      setSearchMessage('Please enter a location');
-      setTimeout(() => setSearchMessage(''), 3000);
+      setError('Please enter a city name.');
       return;
     }
 
-    setSearchMessage(`Searching for weather in ${location}...`);
-    
+    setLoading(true);
+    setError('');
+
     try {
-      // 🇱🇰  countrycodes=lk 
-      const geoRes = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}&countrycodes=lk&limit=1`,
-        {
-          headers: {
-            'User-Agent': 'HyperlocalWeatherApp/1.0'
-          }
-        }
+     
+      const response = await fetch(
+        `https://api.openweathermap.org/data/2.5/weather?q=${location},LK&units=metric&appid=${API_KEY}`
       );
-      const geoData = await geoRes.json();
-      
-      if (geoData && geoData.length > 0) {
-        const result = geoData[0];
-        
-      
-        const nameParts = result.display_name.split(',');
-        const cleanName = `${nameParts[0]}, Sri Lanka`;
-        
-        // Open-Meteo 
-        const weatherRes = await fetch(
-          `https://api.open-meteo.com/v1/forecast?latitude=${result.lat}&longitude=${result.lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,precipitation`
-        );
-        const data = await weatherRes.json();
-        const current = data.current;
+      const data = await response.json();
 
-        setWeatherData({
-          cityName: cleanName,
-          temp: `${Math.round(current.temperature_2m)}°C`,
-          precipitation: current.precipitation > 0 ? `${Math.round(current.precipitation * 10)}%` : '0%',
-          humidity: `${current.relative_humidity_2m}%`,
-          wind: `${Math.round(current.wind_speed_10m)} km/h`
-        });
-        setSearchMessage('');
+      if (data.cod === 200) {
+        setWeather(data);
       } else {
-        // Nominatim එකෙන් නැත්නම් Open-Meteo Geocoding එකෙන් Backup සර්ච් එකක් කරනවා
-        const backupRes = await fetch(
-          `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(location)}&count=1&language=en&format=json`
-        );
-        const backupData = await backupRes.json();
-
-        if (backupData.results && backupData.results.length > 0) {
-          const result = backupData.results[0];
-          
-          const weatherRes = await fetch(
-            `https://api.open-meteo.com/v1/forecast?latitude=${result.latitude}&longitude=${result.longitude}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,precipitation`
-          );
-          const data = await weatherRes.json();
-          const current = data.current;
-
-          setWeatherData({
-            cityName: `${result.name}, ${result.country_code || 'LK'}`,
-            temp: `${Math.round(current.temperature_2m)}°C`,
-            precipitation: current.precipitation > 0 ? `${Math.round(current.precipitation * 10)}%` : '0%',
-            humidity: `${current.relative_humidity_2m}%`,
-            wind: `${Math.round(current.wind_speed_10m)} km/h`
-          });
-          setSearchMessage('');
-        } else {
-          setSearchMessage('Location not found. Try again.');
-          setTimeout(() => setSearchMessage(''), 3000);
-        }
+        setError('City not found in Sri Lanka. Please try Colombo, Kandy, or Galle.');
+        setWeather(null);
       }
     } catch (err) {
-      console.error(err);
-      setSearchMessage('Error searching location.');
-      setTimeout(() => setSearchMessage(''), 3000);
+      setError('Failed to connect to the weather service.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -170,17 +70,26 @@ const Home = () => {
             </h2>
             
             <div className="weather-info">
-              {/* 🌡️ Google Weather  Precipitation, Humidity, Wind  */}
-              <div className="temp"><i className="fas fa-thermometer-half"></i> <span>{weatherData.temp}</span></div>
-              <div className="rain"><i className="fas fa-cloud-rain"></i> <span>Precipitation: {weatherData.precipitation}</span></div>
-              <div className="humidity" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#cbd5e1', fontSize: '1.1rem' }}>
-                <i className="fas fa-tint" style={{ color: '#38bdf8' }}></i> <span>Humidity: {weatherData.humidity}</span>
+              <div className="temp">
+                <i className="fas fa-temperature-high"></i> 
+                <span>{weather ? `${Math.round(weather.main.temp)}°C` : "--°C"}</span>
               </div>
-              <div className="wind"><i className="fas fa-wind"></i> <span>Wind: {weatherData.wind}</span></div>
+              <div className="rain">
+                <i className="fas fa-cloud-showers-heavy"></i> 
+                <span>{weather ? `${weather.weather[0].description}` : "Condition"}</span>
+              </div>
+              <div className="wind">
+                <i className="fas fa-wind"></i> 
+                <span>{weather ? `${weather.wind.speed} m/s` : "Wind Speed"}</span>
+              </div>
             </div>
-            <p style={{ marginTop: '16px', color: '#94a3b8', fontSize: '0.9rem' }}>
-              <i className="fas fa-map-marker-alt"></i> {weatherData.cityName}
-            </p>
+
+            {weather && (
+              <div style={{ marginTop: '20px', borderTop: '1px solid #334155', paddingTop: '15px' }}>
+                <p><strong>Humidity:</strong> {weather.main.humidity}%</p>
+                <p><strong>Feels Like:</strong> {Math.round(weather.main.feels_like)}°C</p>
+              </div>
+            )}
           </div>
 
           <div className="alert-banner">

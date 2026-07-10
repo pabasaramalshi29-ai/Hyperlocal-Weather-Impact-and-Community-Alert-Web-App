@@ -78,6 +78,13 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const loginUser = (userInfo) => {
+    setUser(userInfo);
+    setIsAuthenticated(true);
+    localStorage.setItem('user', JSON.stringify(userInfo));
+    localStorage.setItem('token', 'email-token');
+  };
+
   const logout = () => {
     setUser(null);
     setIsAuthenticated(false);
@@ -86,7 +93,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, loading, handleGoogleLogin, handleFacebookLogin, logout }}>
+    <AuthContext.Provider value={{ user, isAuthenticated, loading, handleGoogleLogin, handleFacebookLogin, loginUser, logout }}>
       {children}
     </AuthContext.Provider>
   );

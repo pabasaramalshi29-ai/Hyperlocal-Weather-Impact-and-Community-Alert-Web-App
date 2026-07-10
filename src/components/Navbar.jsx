@@ -48,8 +48,8 @@ const Navbar = () => {
             </NavLink>
           </li>
           <li>
-            <NavLink to="/Register" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-              <i className="fas fa-edit"></i> Register
+            <NavLink to="/district-register" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+              <i className="fas fa-user-plus"></i> Register
             </NavLink>
           </li>
         </ul>

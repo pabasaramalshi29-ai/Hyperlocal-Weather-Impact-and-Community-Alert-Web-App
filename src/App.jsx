@@ -8,6 +8,7 @@ import Home from './pages/Home';
 import Alerts from './pages/Alerts';
 import MapPage from './pages/mapPage';
 import Report from './pages/Report';
+import DistrictRegister from './pages/DistrictRegister';
 import './App.css';
 
 // ProtectedRoute component to check authentication
@@ -80,6 +81,14 @@ function AppContent() {
           element={
             <ProtectedRoute>
               <Report />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/district-register"
+          element={
+            <ProtectedRoute>
+              <DistrictRegister />
             </ProtectedRoute>
           }
         />
