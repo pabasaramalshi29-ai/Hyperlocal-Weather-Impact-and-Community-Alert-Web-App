@@ -1,31 +1,36 @@
-/* SignUp page styles */
+/* SignUp page styles - Premium Glassmorphic Dark Mode */
 .signup-container {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: radial-gradient(circle at 50% 50%, #111827 0%, #030712 100%);
   position: relative;
   overflow: hidden;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  padding: 20px;
+  font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
+  padding: 30px 20px;
+  box-sizing: border-box;
 }
 
 .signup-box {
-  background: white;
-  border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  padding: 50px 40px;
-  max-width: 500px;
+  background: rgba(17, 24, 39, 0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  padding: 40px;
+  max-width: 550px;
   width: 100%;
   z-index: 10;
-  animation: slideUp 0.6s ease-out;
+  animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
 }
 
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(40px);
   }
   to {
     opacity: 1;
@@ -35,88 +40,93 @@
 
 .signup-header {
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: 24px;
 }
 
 .signup-header h1 {
-  color: #667eea;
-  font-size: 2.5em;
+  background: linear-gradient(135deg, #60a5fa 0%, #818cf8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 2.4rem;
   margin: 0;
-  font-weight: 700;
+  font-weight: 800;
+  letter-spacing: -0.5px;
 }
 
 .signup-header p {
-  color: #888;
-  font-size: 0.9em;
-  margin: 8px 0 0 0;
-  letter-spacing: 0.5px;
+  color: #94a3b8;
+  font-size: 0.95rem;
+  margin: 6px 0 0 0;
+  letter-spacing: 0.2px;
 }
 
 .signup-content h2 {
-  color: #333;
-  font-size: 1.8em;
-  margin: 0 0 10px 0;
+  color: #f8fafc;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 6px 0;
   text-align: center;
 }
 
 .subtitle {
-  color: #999;
+  color: #64748b;
   text-align: center;
-  font-size: 0.95em;
-  margin-bottom: 30px;
+  font-size: 0.9rem;
+  margin-bottom: 24px;
 }
 
 .oauth-buttons {
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  margin-bottom: 25px;
+  gap: 12px;
+  margin-bottom: 20px;
 }
 
 .google-signup-wrapper,
 .facebook-signup-wrapper {
   display: flex;
   justify-content: center;
+  width: 100%;
 }
 
 .google-signup-wrapper button {
   width: 100%;
-  max-width: 350px;
 }
 
 .facebook-signup-button {
   width: 100%;
-  padding: 12px 20px;
+  padding: 11px 20px;
   background: #1877f2;
-  color: white;
+  color: #ffffff;
   border: none;
   border-radius: 8px;
-  font-size: 1em;
+  font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  box-shadow: 0 4px 15px rgba(24, 119, 242, 0.3);
+  box-shadow: 0 4px 12px rgba(24, 119, 242, 0.25);
+  font-family: inherit;
 }
 
 .facebook-signup-button:hover {
-  background: #0a66c2;
-  box-shadow: 0 6px 20px rgba(24, 119, 242, 0.4);
-  transform: translateY(-2px);
+  background: #166fe5;
+  box-shadow: 0 6px 16px rgba(24, 119, 242, 0.35);
+  transform: translateY(-1px);
 }
 
 .facebook-signup-button i {
-  font-size: 1.3em;
+  font-size: 1.15rem;
 }
 
 .divider {
   display: flex;
   align-items: center;
-  margin: 25px 0;
-  color: #ccc;
+  margin: 20px 0;
+  color: rgba(255, 255, 255, 0.1);
 }
 
 .divider::before,
@@ -124,21 +134,28 @@
   content: '';
   flex: 1;
   height: 1px;
-  background: #ddd;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .divider span {
   padding: 0 15px;
-  color: #999;
-  font-size: 0.9em;
-  font-weight: 500;
+  color: #475569;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .signup-form {
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  margin-bottom: 20px;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
 }
 
 .form-group {
@@ -148,103 +165,125 @@
 }
 
 .form-group label {
-  color: #333;
-  font-weight: 600;
-  font-size: 0.95em;
+  color: #cbd5e1;
+  font-weight: 500;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.form-group input {
-  padding: 12px 16px;
-  border: 2px solid #eee;
+.form-group input,
+.form-group select {
+  padding: 12px 14px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
-  font-size: 1em;
-  transition: all 0.3s ease;
+  color: #f8fafc;
+  font-size: 0.95rem;
+  transition: all 0.25s ease;
   font-family: inherit;
+  box-sizing: border-box;
 }
 
-.form-group input:focus {
+.form-group input:focus,
+.form-group select:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+  background: rgba(15, 23, 42, 0.8);
 }
 
 .form-group input::placeholder {
-  color: #bbb;
+  color: #475569;
 }
 
-.form-group input.input-error {
-  border-color: #ff6b6b;
-  background: rgba(255, 107, 107, 0.05);
+.form-group input.input-error,
+.form-group select.input-error {
+  border-color: rgba(239, 68, 68, 0.5);
+  background: rgba(239, 68, 68, 0.05);
 }
 
-.form-group input.input-error:focus {
-  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+.form-group input.input-error:focus,
+.form-group select.input-error:focus {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
 }
 
 .form-group.checkbox {
   flex-direction: row;
   align-items: flex-start;
   gap: 10px;
+  margin-top: 4px;
 }
 
 .form-group.checkbox input {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   margin-top: 2px;
   cursor: pointer;
-  accent-color: #667eea;
+  accent-color: #6366f1;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
 }
 
 .form-group.checkbox label {
   flex: 1;
   margin: 0;
-  font-size: 0.9em;
+  font-size: 0.85rem;
   line-height: 1.5;
+  color: #94a3b8;
 }
 
 .form-group.checkbox a {
-  color: #667eea;
+  color: #60a5fa;
   text-decoration: none;
-  transition: color 0.3s ease;
+  font-weight: 500;
+  transition: color 0.2s ease;
 }
 
 .form-group.checkbox a:hover {
-  color: #764ba2;
+  color: #818cf8;
   text-decoration: underline;
 }
 
 .field-error {
-  color: #ff6b6b;
-  font-size: 0.85em;
-  margin-top: -2px;
+  color: #f87171;
+  font-size: 0.8rem;
+  margin-top: 2px;
+  font-weight: 500;
 }
 
 .error-message {
-  padding: 12px 16px;
-  background: rgba(255, 107, 107, 0.1);
-  color: #ff6b6b;
-  border: 1px solid #ff6b6b;
+  padding: 10px 14px;
+  background: rgba(239, 68, 68, 0.1);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.2);
   border-radius: 8px;
-  font-size: 0.9em;
-  margin-bottom: 15px;
+  font-size: 0.85rem;
+  text-align: center;
 }
 
 .signup-btn {
   padding: 12px 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+  color: #ffffff;
   border: none;
   border-radius: 8px;
-  font-size: 1em;
+  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
+  font-family: inherit;
+  margin-top: 6px;
 }
 
 .signup-btn:hover:not(:disabled) {
-  box-shadow: 0 6px 25px rgba(102, 126, 234, 0.4);
-  transform: translateY(-2px);
+  background: linear-gradient(135deg, #4338ca 0%, #4f46e5 100%);
+  box-shadow: 0 6px 18px rgba(99, 102, 241, 0.4);
+  transform: translateY(-1px);
 }
 
 .signup-btn:active:not(:disabled) {
@@ -252,36 +291,36 @@
 }
 
 .signup-btn:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
 .login-link {
   text-align: center;
-  color: #666;
-  font-size: 0.95em;
-  margin: 20px 0 0 0;
+  color: #64748b;
+  font-size: 0.9rem;
+  margin: 16px 0 0 0;
 }
 
 .login-link a {
-  color: #667eea;
+  color: #60a5fa;
   text-decoration: none;
   font-weight: 600;
-  transition: color 0.3s ease;
+  transition: color 0.2s ease;
 }
 
 .login-link a:hover {
-  color: #764ba2;
+  color: #818cf8;
   text-decoration: underline;
 }
 
 .signup-footer {
   text-align: center;
-  margin-top: 30px;
-  padding-top: 25px;
-  border-top: 1px solid #eee;
-  color: #999;
-  font-size: 0.85em;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  color: #475569;
+  font-size: 0.8rem;
 }
 
 .signup-background {
@@ -291,15 +330,16 @@
   right: 0;
   bottom: 0;
   z-index: 0;
-  opacity: 0.5;
+  opacity: 0.35;
   overflow: hidden;
+  pointer-events: none;
 }
 
 .weather-icon {
   position: absolute;
-  font-size: 5em;
-  opacity: 0.15;
-  animation: float 6s ease-in-out infinite;
+  font-size: 5rem;
+  opacity: 0.06;
+  animation: float 8s ease-in-out infinite;
 }
 
 .weather-icon:nth-child(1) {
@@ -311,49 +351,44 @@
 .weather-icon:nth-child(2) {
   top: 60%;
   right: 15%;
-  animation-delay: 2s;
+  animation-delay: 2.5s;
 }
 
 .weather-icon:nth-child(3) {
   bottom: 20%;
   left: 20%;
-  animation-delay: 4s;
+  animation-delay: 5s;
 }
 
 @keyframes float {
-  0%,
-  100% {
+  0%, 100% {
     transform: translateY(0px) rotate(0deg);
   }
   50% {
-    transform: translateY(-20px) rotate(5deg);
+    transform: translateY(-15px) rotate(3deg);
   }
 }
 
 /* Responsive design */
 @media (max-width: 480px) {
   .signup-box {
-    padding: 35px 25px;
+    padding: 30px 20px;
+  }
+  
+  .form-row {
+    flex-direction: column;
+    gap: 16px;
   }
 
   .signup-header h1 {
-    font-size: 2em;
+    font-size: 2rem;
   }
 
   .signup-content h2 {
-    font-size: 1.4em;
+    font-size: 1.3rem;
   }
 
   .weather-icon {
-    font-size: 3em;
+    font-size: 3.5rem;
   }
-}
-
-/* Google and Facebook button styles */
-:global(.gsi-device-button-container) {
-  width: 100%;
-}
-
-:global(.gsi-button) {
-  width: 100%;
 }

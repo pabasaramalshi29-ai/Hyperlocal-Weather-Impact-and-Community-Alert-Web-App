@@ -1,5 +1,4 @@
 /* App.css */
-
 * {
   margin: 0;
   padding: 0;
@@ -431,13 +430,13 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.form-group {
+.report-form .form-group {
   position: relative;
   margin-bottom: 28px;
 }
 
-.form-group input,
-.form-group textarea {
+.report-form .form-group input,
+.report-form .form-group textarea {
   width: 100%;
   padding: 14px 16px;
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -449,18 +448,18 @@ body {
   transition: all 0.2s;
 }
 
-.form-group textarea {
+.report-form .form-group textarea {
   min-height: 100px;
   resize: vertical;
 }
 
-.form-group input:focus,
-.form-group textarea:focus {
+.report-form .form-group input:focus,
+.report-form .form-group textarea:focus {
   border-color: #60a5fa;
   background: rgba(255, 255, 255, 0.1);
 }
 
-.form-group label {
+.report-form .form-group label {
   position: absolute;
   left: 16px;
   top: 14px;
@@ -469,10 +468,10 @@ body {
   pointer-events: none;
 }
 
-.form-group input:focus + label,
-.form-group input:not(:placeholder-shown) + label,
-.form-group textarea:focus + label,
-.form-group textarea:not(:placeholder-shown) + label {
+.report-form .form-group input:focus + label,
+.report-form .form-group input:not(:placeholder-shown) + label,
+.report-form .form-group textarea:focus + label,
+.report-form .form-group textarea:not(:placeholder-shown) + label {
   transform: translateY(-24px) scale(0.85);
   color: #60a5fa;
   background: #1e293b;
@@ -573,75 +572,4 @@ body {
 
 .control-panel {
     z-index: 1100 !important;
-}
-
-/* Report Page Layout Fixes */
-.report-page-layout {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.report-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr; /* පැති දෙකකට බෙදන්න */
-  gap: 30px;
-  align-items: start;
-}
-
-.mini-map {
-  width: 100%;
-  height: 300px;
-  border-radius: 12px;
-  border: 1px solid #475569;
-}
-
-/* Mobile responsive fix */
-@media (max-width: 768px) {
-  .report-grid {
-    grid-template-columns: 1fr; /* මොබයිල් වලදී එක උඩ එක වැටෙන්න */
-  }
-}
-
-
-.alert-card {
-  background: #1e293b;
-  padding: 20px;
-  border-radius: 12px;
-  margin-bottom: 15px;
-  border: 1px solid #334155;
-  transition: all 0.3s ease;
-}
-
-/* Confirmed Alerts සඳහා ස්ටයිල් */
-.alert-card.confirmed {
-  border-left: 5px solid #10b981; /* කොළ පාට */
-}
-
-.alert-card.confirmed h3 {
-  color: #10b981;
-}
-
-/* Pending Alerts සඳහා ස්ටයිල් */
-.alert-card.pending {
-  border-left: 5px solid #f59e0b; /* කහ පාට */
-}
-
-.alert-card.pending h3 {
-  color: #f59e0b;
-}
-
-.alert-card button {
-  background: #3b82f6;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  margin-top: 10px;
-  font-weight: bold;
-}
-
-.alert-card button:hover {
-  background: #2563eb;
 }
