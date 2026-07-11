@@ -1,5 +1,4 @@
 // pages/Report.jsx
-import { useLanguage } from '../components/LanguageContext';
 import { useState, useEffect, useRef } from 'react';
 import {
   submitDistrictReport,
@@ -8,10 +7,6 @@ import {
 } from '../utils/districtAlertService';
 
 const ALERT_THRESHOLD = 3;
- // 🌟 Language Context එකෙන් 't' object එක ලබා ගැනීම
-  // කලින් තිබ්බේ: const { t } = useLanguage();
-const { lang, t } = useLanguage(); // 👈 lang එකත් මෙතනින් ගන්න
-
 
 // ── Severity levels config ───────────────────────────────────────────────────
 const SEVERITY_LEVELS = [
