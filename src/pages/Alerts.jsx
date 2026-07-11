@@ -1,4 +1,5 @@
 // pages/Alerts.jsx
+import { useLanguage } from '../components/LanguageContext';
 import { useEffect, useState, useCallback } from 'react';
 import { db } from '../firebase';
 import {
@@ -9,14 +10,6 @@ import {
 // ── How many days before an alert is auto-deleted ────────────────────────────
 const EXPIRY_DAYS = 5;
 
-// ── Severity display config ───────────────────────────────────────────────────
-const SEVERITY_META = {
-  high: { label: 'High Risk', icon: '🚨', cls: 'high' },
-  medium: { label: 'Medium', icon: '⚠️', cls: 'medium' },
-  low: { label: 'Normal', icon: '✅', cls: 'low' },
-};
-const getSev = (s = 'medium') => SEVERITY_META[s.toLowerCase()] || SEVERITY_META.medium;
-
 const Alerts = () => {
   const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -24,6 +17,17 @@ const Alerts = () => {
   const [deleted, setDeleted] = useState([]);     // ids that just got deleted (for exit anim)
   const [filter, setFilter] = useState('all');  // 'all' | 'high' | 'medium' | 'low'
   const [confirmDeleteId, setConfirmDeleteId] = useState(null); // id of card requesting deletion confirmation
+
+  // 🌟 Language Context එකෙන් 't' සහ 'lang' ලබා ගැනීම
+  const { t, lang } = useLanguage();
+
+  // ── Severity display config ───────────────────────────────────────────────────
+  const SEVERITY_META = {
+    high: { label: t.highRisk || 'High Risk', icon: '🚨', cls: 'high' },
+    medium: { label: t.mediumRisk || 'Medium', icon: '⚠️', cls: 'medium' },
+    low: { label: t.normalRisk || 'Normal', icon: '✅', cls: 'low' },
+  };
+  const getSev = (s = 'medium') => SEVERITY_META[s.toLowerCase()] || SEVERITY_META.medium;
 
   // ── Auto-delete alerts older than EXPIRY_DAYS days ───────────────────────
   const purgeExpiredAlerts = useCallback(async () => {
@@ -62,7 +66,7 @@ const Alerts = () => {
         const d = docSnap.data();
 
         // Compute time display + days remaining
-        let formattedTime = 'Just now';
+        let formattedTime = t.justNow || 'Just now';
         let daysLeft = EXPIRY_DAYS;
         let ageLabel = '';
 
@@ -71,18 +75,28 @@ const Alerts = () => {
           const ageMs = now - date.getTime();
           const ageDays = Math.floor(ageMs / (1000 * 60 * 60 * 24));
           daysLeft = Math.max(0, EXPIRY_DAYS - ageDays);
+
+          // 🌟 භාෂාව අනුව දිනය පෙන්වන ක්‍රමය (si-LK / ta-LK / en-LK) dynamic කිරීම
+          const localeCode = lang === 'si' ? 'si-LK' : lang === 'ta' ? 'ta-LK' : 'en-LK';
+
           formattedTime = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-            + ' · ' + date.toLocaleDateString('en-LK');
+            + ' · ' + date.toLocaleDateString(localeCode);
+          
+          // 🌟 භාෂා 3ටම ගැලපෙන විදිහට "දින කිහිපයකට පෙර" වාක්‍යය සැකසීම
           ageLabel = ageDays === 0
-            ? 'Today'
+            ? (t.today || 'Today')
             : ageDays === 1
-              ? '1 day ago'
-              : `${ageDays} days ago`;
+              ? (t.yesterday || '1 day ago')
+              : lang === 'si'
+                ? `දින ${ageDays}කට පෙර` 
+                : lang === 'ta'
+                  ? `${ageDays} நாட்களுக்கு முன்`
+                  : `${ageDays} ${t.daysAgo || 'days ago'}`;
         }
 
         return {
           id: docSnap.id,
-          title: d.title || 'Community Report',
+          title: d.title || (t.defaultAlertTitle || 'Community Report'), // 🌟 Community Report එක භාෂා 3ටම හැරවීම
           severity: d.severity || 'medium',
           loc: d.loc || 'Unknown Location',
           district: d.district || '',
@@ -103,8 +117,7 @@ const Alerts = () => {
     });
 
     return () => unsubscribe();
-  }, [purgeExpiredAlerts]);
-
+  }, [purgeExpiredAlerts, lang, t]); // Add lang and t to dependency array to handle instant updates
   // ── Manual delete ────────────────────────────────────────────────────────
   const handleDelete = async (id) => {
     setDeleting(id);
@@ -243,21 +256,21 @@ const Alerts = () => {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '24px' }}>
             <div style={{ textAlign: 'left' }}>
               <h1 style={{ marginBottom: '4px' }}>
-                <i className="fas fa-bell"></i> Community Alerts
+                <i className="fas fa-bell"></i> {t.alertsTitle || 'Community Alerts'}
               </h1>
               <p style={{ color: '#64748b', fontSize: '0.85rem' }}>
                 <i className="fas fa-clock" style={{ marginRight: 5 }}></i>
-                Alerts are automatically deleted after <strong style={{ color: '#f59e0b' }}>{EXPIRY_DAYS} days</strong>
+                {t.expiryInfo || 'Alerts are automatically deleted after'} <strong style={{ color: '#f59e0b' }}>{EXPIRY_DAYS} {t.days || 'days'}</strong>
               </p>
             </div>
 
             {/* Stats */}
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
               {[
-                { sev: 'all', label: `All (${alerts.length})`, cls: 'fp-all' },
-                { sev: 'high', label: `🚨 High (${countOf('high')})`, cls: 'fp-high' },
-                { sev: 'medium', label: `⚠️ Medium (${countOf('medium')})`, cls: 'fp-medium' },
-                { sev: 'low', label: `✅ Normal (${countOf('low')})`, cls: 'fp-low' },
+                { sev: 'all', label: `${lang === 'si' ? 'සියල්ල' : 'All'} (${alerts.length})`, cls: 'fp-all' },
+                { sev: 'high', label: `🚨 ${lang === 'si' ? 'ඉහළ' : 'High'} (${countOf('high')})`, cls: 'fp-high' },
+                { sev: 'medium', label: `⚠️ ${lang === 'si' ? 'මධ්‍යම' : 'Medium'} (${countOf('medium')})`, cls: 'fp-medium' },
+                { sev: 'low', label: `✅ ${lang === 'si' ? 'සාමාන්‍ය' : 'Normal'} (${countOf('low')})`, cls: 'fp-low' },
               ].map(({ sev, label, cls }) => (
                 <button
                   key={sev}
@@ -274,13 +287,15 @@ const Alerts = () => {
           {loading ? (
             <div style={{ textAlign: 'center', padding: '60px 0', color: '#94a3b8' }}>
               <div style={{ fontSize: '2rem', marginBottom: '12px' }}>⏳</div>
-              Loading live alerts...
+              {t.loadingAlerts || 'Loading live alerts...'}
             </div>
           ) : displayed.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '60px 0', color: '#94a3b8' }}>
               <div style={{ fontSize: '3rem', marginBottom: '12px' }}>🔔</div>
-              <p style={{ fontSize: '1.1rem' }}>No alerts {filter !== 'all' ? `with "${filter}" severity` : 'reported'} yet.</p>
-              <p style={{ fontSize: '0.85rem', color: '#475569', marginTop: '6px' }}>Submit a report to see it here.</p>
+              <p style={{ fontSize: '1.1rem' }}>
+                {filter !== 'all' ? (t.noAlertsWithSeverity || `No alerts with "${filter}" severity yet.`) : (t.noAlerts || 'No alerts reported yet.')}
+              </p>
+              <p style={{ fontSize: '0.85rem', color: '#475569', marginTop: '6px' }}>{t.submitReportNotice || 'Submit a report to see it here.'}</p>
             </div>
           ) : (
             <div className="alerts-list">
@@ -328,13 +343,13 @@ const Alerts = () => {
                             }}
                           >
                             {alert.status === 'confirmed'
-                              ? `✅ Confirmed · ${alert.reportCount} reports`
-                              : `⏳ Pending · ${alert.reportCount}/3 reports today`}
+                              ? `✅ ${t.confirmedStatus || 'Confirmed'} · ${alert.reportCount} ${t.reportsCount || 'reports'}`
+                              : `⏳ ${t.pendingStatus || 'Pending'} · ${alert.reportCount}/3 ${t.reportsToday || 'reports today'}`}
                           </span>
                         </div>
                         {alert.district && (
                           <div style={{ fontSize: '0.78rem', color: '#6366f1', marginTop: '4px', fontWeight: 600 }}>
-                            🗺️ {alert.district} District
+                            🗺️ {alert.district} {t.districtLabel || 'District'}
                           </div>
                         )}
                       </div>
@@ -347,8 +362,8 @@ const Alerts = () => {
                         title="Delete this alert"
                       >
                         {isDeleting
-                          ? <><i className="fas fa-spinner fa-spin"></i> Deleting</>
-                          : <><i className="fas fa-trash-alt"></i> Delete</>
+                          ? <><i className="fas fa-spinner fa-spin"></i> {t.deletingBtn || 'Deleting'}</>
+                          : <><i className="fas fa-trash-alt"></i> {t.deleteBtn || 'Delete'}</>
                         }
                       </button>
                     </div>
@@ -378,10 +393,10 @@ const Alerts = () => {
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: '#475569', marginBottom: '4px' }}>
                         <span>
                           <i className="fas fa-hourglass-half" style={{ marginRight: 4 }}></i>
-                          Auto-deletes in
+                          {t.autoDeletesIn || 'Auto-deletes in'}
                         </span>
                         <span style={{ color: expiryColor, fontWeight: 700 }}>
-                          {alert.daysLeft === 0 ? 'Today' : `${alert.daysLeft} day${alert.daysLeft !== 1 ? 's' : ''}`}
+                          {alert.daysLeft === 0 ? (t.today || 'Today') : `${alert.daysLeft} ${lang === 'si' ? 'දිනකින්' : `day${alert.daysLeft !== 1 ? 's' : ''}`}`}
                         </span>
                       </div>
                       <div className="expiry-bar">
@@ -405,9 +420,9 @@ const Alerts = () => {
         <div className="modal-overlay">
           <div className="modal-content">
             <div style={{ fontSize: '3rem', marginBottom: '16px' }}>🗑️</div>
-            <h3 style={{ margin: '0 0 10px 0', fontSize: '1.2rem', color: '#e2e8f0' }}>Delete Report?</h3>
+            <h3 style={{ margin: '0 0 10px 0', fontSize: '1.2rem', color: '#e2e8f0' }}>{t.deleteReportTitle || 'Delete Report?'}</h3>
             <p style={{ color: '#94a3b8', fontSize: '0.88rem', margin: '0 0 24px 0', lineHeight: 1.5 }}>
-              Are you sure you want to permanently delete this community report? This action cannot be undone.
+              {t.deleteReportDesc || 'Are you sure you want to permanently delete this community report? This action cannot be undone.'}
             </p>
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
               <button
@@ -425,7 +440,7 @@ const Alerts = () => {
                   transition: 'all 0.2s',
                 }}
               >
-                Cancel
+                {t.cancel || 'Cancel'}
               </button>
               <button
                 onClick={() => handleDelete(confirmDeleteId)}
@@ -443,7 +458,7 @@ const Alerts = () => {
                   boxShadow: '0 4px 12px rgba(239,68,68,0.2)',
                 }}
               >
-                Delete
+                {t.deleteBtn || 'Delete'}
               </button>
             </div>
           </div>
