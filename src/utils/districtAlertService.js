@@ -1,236 +1,164 @@
 // src/utils/districtAlertService.js
-// ─────────────────────────────────────────────────────────────────────────────
-// District Alert Email Notification Service
-//
-// Logic (one alert cluster per district PER DAY):
-//  1. Each report for a district is merged into a single Firestore doc
-//     `alerts/{district}_{YYYY-MM-DD}` instead of creating a new alert doc
-//     per submission. The doc's `reportCount` increments with every report.
-//  2. Only reports submitted on the SAME calendar day count toward the
-//     threshold — a report today and 2 more tomorrow will NOT combine.
-//  3. While reportCount < ALERT_THRESHOLD (3), the cluster stays
-//     status: 'pending' and is only visible on the Alerts page.
-//  4. The moment reportCount reaches ALERT_THRESHOLD, the cluster flips to
-//     status: 'confirmed' (shown on the Map page too) and a one-time email
-//     blast goes out to every user registered for that district.
-//  5. Further reports the same day keep incrementing reportCount but the
-//     cluster is already confirmed, so no duplicate emails are sent.
-// ─────────────────────────────────────────────────────────────────────────────
+import { db } from "../firebase";
+import { 
+  doc, 
+  setDoc, 
+  getDoc, 
+  updateDoc, 
+  collection, 
+  addDoc,
+  query, 
+  where, 
+  getDocs, 
+  serverTimestamp, 
+  runTransaction 
+} from "firebase/firestore";
+import emailjs from "@emailjs/browser";
 
-import { db } from '../firebase';
-import {
-  doc,
-  getDoc,
-  setDoc,
-  collection,
-  query,
-  where,
-  getDocs,
-  serverTimestamp,
-  runTransaction,
-} from 'firebase/firestore';
-import emailjs from '@emailjs/browser';
+// --- Configuration ---
+const ALERT_THRESHOLD = 3;
 
-// ── Configuration ────────────────────────────────────────────────────────────
-const ALERT_THRESHOLD = 3; // Number of same-day reports that triggers confirmation + email blast
-
-const EMAILJS_SERVICE_ID  = import.meta.env.VITE_EMAILJS_SERVICE_ID;
-const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
-const EMAILJS_PUBLIC_KEY  = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
-
-// ── Sri Lanka Districts ───────────────────────────────────────────────────────
 export const SRI_LANKA_DISTRICTS = [
-  'Ampara', 'Anuradhapura', 'Badulla', 'Batticaloa', 'Colombo',
-  'Galle', 'Gampaha', 'Hambantota', 'Jaffna', 'Kalutara',
-  'Kandy', 'Kegalle', 'Kilinochchi', 'Kurunegala', 'Mannar',
-  'Matale', 'Matara', 'Monaragala', 'Mullaitivu', 'Nuwara Eliya',
-  'Polonnaruwa', 'Puttalam', 'Ratnapura', 'Trincomalee', 'Vavuniya',
+  "Ampara", "Anuradhapura", "Badulla", "Batticaloa", "Colombo", 
+  "Galle", "Gampaha", "Hambantota", "Jaffna", "Kalutara", 
+  "Kandy", "Kegalle", "Kilinochchi", "Kurunegala", "Mannar", 
+  "Matale", "Matara", "Monaragala", "Mullaitivu", "Nuwara Eliya", 
+  "Polonnaruwa", "Puttalam", "Ratnapura", "Trincomalee", "Vavuniya"
 ];
 
-// ── Severity ranking, used to escalate a cluster to its worst reported severity ──
-const SEVERITY_RANK = { low: 1, medium: 2, high: 3 };
-const higherSeverity = (a = 'medium', b = 'medium') => {
-  const ra = SEVERITY_RANK[(a || 'medium').toLowerCase()] ?? 2;
-  const rb = SEVERITY_RANK[(b || 'medium').toLowerCase()] ?? 2;
-  return ra >= rb ? a : b;
-};
-
-// ── Today's date key in Asia/Colombo time, e.g. "2026-07-10" ─────────────────
-const getDayKey = () =>
-  new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Colombo' });
-
-// ── Deterministic per-district-per-day cluster doc id ────────────────────────
-const getClusterDocId = (district, dayKey = getDayKey()) =>
-  `${district.replace(/\s+/g, '_')}_${dayKey}`;
-
-// ── Send one email via EmailJS ─────────────────────────────────────────────
-const sendAlertEmail = async ({ toEmail, toName, district, alertCount, description, location }) => {
-  // Validate EmailJS is configured before attempting
-  if (
-    !EMAILJS_SERVICE_ID ||
-    EMAILJS_SERVICE_ID === 'YOUR_SERVICE_ID' ||
-    !EMAILJS_TEMPLATE_ID ||
-    EMAILJS_TEMPLATE_ID === 'YOUR_TEMPLATE_ID' ||
-    !EMAILJS_PUBLIC_KEY ||
-    EMAILJS_PUBLIC_KEY === 'YOUR_PUBLIC_KEY'
-  ) {
-    console.warn(
-      '⚠️  EmailJS is not configured. Please set VITE_EMAILJS_SERVICE_ID, ' +
-      'VITE_EMAILJS_TEMPLATE_ID, and VITE_EMAILJS_PUBLIC_KEY in your .env file.'
-    );
-    return false;
-  }
-
-  const templateParams = {
-    to_name:      toName || 'Community Member',
-    to_email:     toEmail,
-    district:     district,
-    alert_count:  alertCount,
-    description:  description || 'Multiple community alerts reported.',
-    location:     location || district,
-    report_time:  new Date().toLocaleString('en-LK', { timeZone: 'Asia/Colombo' }),
-  };
-
+/**
+ * Saves or updates a user profile in Firestore to capture their location/district for alerts
+ */
+export const saveUserToFirestore = async (userData) => {
+  if (!userData || !userData.email) return;
+  
   try {
-    await emailjs.send(
-      EMAILJS_SERVICE_ID,
-      EMAILJS_TEMPLATE_ID,
-      templateParams,
-      EMAILJS_PUBLIC_KEY
-    );
-    console.log(`✅ Email sent to ${toEmail}`);
-    return true;
-  } catch (err) {
-    console.error(`❌ Failed to send email to ${toEmail}:`, err);
-    return false;
+    const safeDocId = userData.email.replace(/[.#$[\]]/g, "_");
+    const userRef = doc(db, "users", safeDocId);
+    
+    await setDoc(userRef, {
+      name: userData.name || "Anonymous User",
+      email: userData.email,
+      district: userData.district || "",
+      updatedAt: serverTimestamp()
+    }, { merge: true });
+    
+    console.log(`User profile successfully mapped to district: ${userData.district}`);
+  } catch (error) {
+    console.error("Error saving user to Firestore:", error);
+    throw error;
   }
 };
 
-// ── Get TODAY's report count for a district (for the progress bar in Report.jsx) ──
+/**
+ * Sends weather alert emails to all registered users in a specific district using EmailJS
+ */
+export const sendDistrictEmailAlerts = async (district, weatherCondition, severity) => {
+  try {
+    const usersRef = collection(db, "users");
+    const q = query(usersRef, where("district", "==", district));
+    const querySnapshot = await getDocs(q);
+    
+    if (querySnapshot.empty) {
+      console.log(`No registered users found in ${district} to notify.`);
+      return;
+    }
+
+    console.log(`Initializing automated EmailJS alerts for ${querySnapshot.size} users in ${district}...`);
+
+    querySnapshot.forEach((userDoc) => {
+      const userData = userDoc.data();
+      
+      const templateParams = {
+        to_name: userData.name,
+        to_email: userData.email,
+        district_name: district,
+        weather_status: weatherCondition,
+        alert_level: severity || "Warning",
+        message: `Emergency Weather Notification: Severe ${weatherCondition} conditions have been reported in ${district}. Please take necessary precautions.`
+      };
+
+      emailjs.send(
+        "YOUR_SERVICE_ID",     // Replace with your real EmailJS Service ID
+        "YOUR_TEMPLATE_ID",    // Replace with your real EmailJS Template ID
+        templateParams,
+        "YOUR_PUBLIC_KEY"      // Replace with your real EmailJS Public Key
+      )
+      .then((response) => {
+         console.log(`Alert dispatch success to ${userData.email}:`, response.status, response.text);
+      })
+      .catch((err) => {
+         console.error(`Failed to dispatch email to ${userData.email}:`, err);
+      });
+    });
+
+  } catch (error) {
+    console.error("Critical error inside district alerting system:", error);
+  }
+};
+
+/**
+ * Fetches the number of weather reports submitted today for a specific district
+ */
 export const getTodayDistrictReportCount = async (district) => {
-  if (!district) return 0;
   try {
-    const snap = await getDoc(doc(db, 'alerts', getClusterDocId(district)));
-    return snap.exists() ? (snap.data().reportCount || 0) : 0;
-  } catch (err) {
-    console.error('Error fetching today district report count:', err);
+    if (!district) return 0;
+
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+
+    const reportsRef = collection(db, "reports"); 
+    const q = query(
+      reportsRef,
+      where("district", "==", district),
+      where("createdAt", ">=", startOfToday)
+    );
+
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.size;
+  } catch (error) {
+    console.error("Error fetching today's report count:", error);
     return 0;
   }
 };
 
-// ── Main function: merge this report into today's district cluster ───────────
-// Creates/updates a single alerts/{district}_{today} doc instead of a new
-// alert doc per report. Confirms + emails once reportCount hits ALERT_THRESHOLD.
-export const submitDistrictReport = async ({
-  district,
-  description,
-  severity,
-  loc,
-  location,
-}) => {
-  if (!district) return { reportCount: 0, status: 'pending', justConfirmed: false };
-
-  const dayKey  = getDayKey();
-  const alertRef = doc(db, 'alerts', getClusterDocId(district, dayKey));
-
-  let reportCount  = 1;
-  let status       = 'pending';
-  let justConfirmed = false;
-
+/**
+ * Submits a new weather report for a specific district and triggers email alerts
+ * (This fixes the missing export named 'submitDistrictReport' error)
+ */
+export const submitDistrictReport = async (reportData) => {
   try {
-    await runTransaction(db, async (transaction) => {
-      const snap = await transaction.get(alertRef);
-
-      if (snap.exists()) {
-        const data = snap.data();
-        const wasConfirmed = data.status === 'confirmed';
-
-        reportCount = (data.reportCount || 0) + 1;
-        status = wasConfirmed || reportCount >= ALERT_THRESHOLD ? 'confirmed' : 'pending';
-        justConfirmed = !wasConfirmed && status === 'confirmed';
-
-        transaction.set(alertRef, {
-          district,
-          dayKey,
-          reportCount,
-          status,
-          severity: higherSeverity(data.severity, severity),
-          description,
-          loc,
-          location,
-          updatedAt: serverTimestamp(),
-        }, { merge: true });
-      } else {
-        status = ALERT_THRESHOLD <= 1 ? 'confirmed' : 'pending';
-        justConfirmed = status === 'confirmed';
-
-        transaction.set(alertRef, {
-          title: 'Community Report',
-          district,
-          dayKey,
-          reportCount: 1,
-          status,
-          severity,
-          description,
-          loc,
-          location,
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp(),
-        });
-      }
-    });
-
-    let usersNotified = 0;
-
-    if (justConfirmed) {
-      console.log(`🚨 "${district}" hit ${ALERT_THRESHOLD} reports today — confirming + notifying residents.`);
-
-      const usersQuery = query(collection(db, 'users'), where('district', '==', district));
-      const usersSnap  = await getDocs(usersQuery);
-      const users = [];
-      usersSnap.forEach((d) => users.push(d.data()));
-
-      if (users.length > 0) {
-        const emailPromises = users.map((u) =>
-          sendAlertEmail({
-            toEmail:     u.email,
-            toName:      u.name,
-            district,
-            alertCount:  ALERT_THRESHOLD,
-            description,
-            location:    loc,
-          })
-        );
-        await Promise.allSettled(emailPromises);
-      }
-      usersNotified = users.length;
+    if (!reportData || !reportData.district) {
+      throw new Error("Invalid report data provided.");
     }
 
-    return { reportCount, status, justConfirmed, usersNotified };
-  } catch (err) {
-    console.error('Error in submitDistrictReport:', err);
-    return { reportCount: 0, status: 'pending', justConfirmed: false, error: err.message };
-  }
-};
-
-// ── Save user to Firestore (called from SignUp) ───────────────────────────────
-export const saveUserToFirestore = async ({ name, email, district }) => {
-  if (!email) return false;
-
-  try {
-    // Use email as the document ID (safe for Firestore doc keys after sanitization)
-    const safeId = email.replace(/[.#$[\]]/g, '_');
-    await setDoc(doc(db, 'users', safeId), {
-      name:      name || '',
-      email,
-      district:  district || '',
+    const reportsRef = collection(db, "reports");
+    
+    // 1. Report එක Firestore එකට Save කිරීම
+    const finalReport = {
+      ...reportData,
       createdAt: serverTimestamp(),
-    }, { merge: true });
+    };
+    
+    const docRef = await addDoc(reportsRef, finalReport);
+    console.log("Report submitted successfully with ID:", docRef.id);
 
-    console.log(`✅ User ${email} saved to Firestore (district: ${district})`);
-    return true;
-  } catch (err) {
-    console.error('Error saving user to Firestore:', err);
-    return false;
+    // 2. අද දිනට මේ දිස්ත්‍රික්කයෙන් ලැබුණු මුළු reports ගණන බැලීම
+    const todayCount = await getTodayDistrictReportCount(reportData.district);
+    
+    // 3. Reports ගණන සීමාව ඉක්මවා ඇත්නම් දිස්ත්‍රික්කයේ අයට Email Alerts යැවීම
+    if (todayCount >= ALERT_THRESHOLD) {
+      console.log(`Alert threshold (${ALERT_THRESHOLD}) reached for ${reportData.district}! Sending emails...`);
+      await sendDistrictEmailAlerts(
+        reportData.district, 
+        reportData.weatherCondition || reportData.condition || "Severe Weather", 
+        reportData.severity || "High Alert"
+      );
+    }
+
+    return docRef.id;
+  } catch (error) {
+    console.error("Error in submitDistrictReport:", error);
+    throw error;
   }
 };
