@@ -2,14 +2,13 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
-//  Firebase Configuration 
 const firebaseConfig = {
-  apiKey: "AIzaSyBuBwo4fMVjzDGw6kA5faJl7dF5RcNbuVE",
-  authDomain: "hyperweather-696c8.firebaseapp.com",
-  projectId: "hyperweather-696c8",
-  storageBucket: "hyperweather-696c8.firebasestorage.app",
-  messagingSenderId: "307932801473",
-  appId: "1:307932801473:web:ca44b2400753ff40d12740",
+  apiKey: "AIzaSyAvhVli99RFMX2TIQmOKx2bvvuey5YQK3Y",
+  authDomain: "hyperweather-app.firebaseapp.com",
+  projectId: "hyperweather-app",
+  storageBucket: "hyperweather-app.firebasestorage.app",
+  messagingSenderId: "977088441654",
+  appId: "1:977088441654:web:193a766fb2e636908b1797",
   measurementId: "G-BM0ZRVNWGF"
 };
 
