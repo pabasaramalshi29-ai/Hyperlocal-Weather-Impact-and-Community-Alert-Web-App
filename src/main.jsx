@@ -1,4 +1,3 @@
-import { LanguageProvider } from './components/LanguageContext.jsx'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
@@ -10,10 +9,7 @@ const root = document.getElementById('root');
 if (root) {
   createRoot(root).render(
     <StrictMode>
-      {/* 🌟 මෙන්න මේ විදිහට LanguageProvider එක ඇතුළට App එක දාන්න */}
-      <LanguageProvider>
-        <App />
-      </LanguageProvider>
+      <App />
     </StrictMode>,
   );
   console.log('React app rendered successfully');
