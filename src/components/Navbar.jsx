@@ -7,6 +7,7 @@ import './Navbar.css';
 const Navbar = () => {
   const { user, logout } = useAuth();
   const [showDropdown, setShowDropdown] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // State for mobile menu toggle
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -25,30 +26,35 @@ const Navbar = () => {
           <span>Hyper<span className="logo-gradient">Weather</span></span>
         </div>
 
-        {/* Navigation Links Menu */}
-        <ul className="nav-menu">
+        {/* Mobile Hamburger Button */}
+        <button className="hamburger-btn" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+          ☰
+        </button>
+
+        {/* Navigation Links Menu - Added mobile-open class conditionally */}
+        <ul className={`nav-menu ${isMenuOpen ? 'mobile-open' : ''}`}>
           <li>
-            <NavLink to="/" end className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+            <NavLink to="/" end className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'} onClick={() => setIsMenuOpen(false)}>
               <i className="fas fa-home"></i> Home
             </NavLink>
           </li>
           <li>
-            <NavLink to="/map" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+            <NavLink to="/map" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'} onClick={() => setIsMenuOpen(false)}>
               <i className="fas fa-map-marked-alt"></i> Map
             </NavLink>
           </li>
           <li>
-            <NavLink to="/alerts" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+            <NavLink to="/alerts" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'} onClick={() => setIsMenuOpen(false)}>
               <i className="fas fa-exclamation-triangle"></i> Alerts
             </NavLink>
           </li>
           <li>
-            <NavLink to="/report" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+            <NavLink to="/report" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'} onClick={() => setIsMenuOpen(false)}>
               <i className="fas fa-edit"></i> Report
             </NavLink>
           </li>
           <li>
-            <NavLink to="/district-register" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+            <NavLink to="/district-register" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'} onClick={() => setIsMenuOpen(false)}>
               <i className="fas fa-user-plus"></i> Register
             </NavLink>
           </li>
