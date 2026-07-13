@@ -1,5 +1,6 @@
 // pages/Report.jsx
 import { useState, useEffect, useRef } from 'react';
+import './Report.css';
 import {
   submitDistrictReport,
   getTodayDistrictReportCount,
@@ -368,16 +369,7 @@ const Report = () => {
           )}
 
           {/* ── Main grid: form + map ─────────────────────────────────── */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: '30px',
-              maxWidth: '900px',
-              margin: '0 auto',
-              alignItems: 'start',
-            }}
-          >
+          <div className="report-container-grid">
             {/* Left — form */}
             <form
               className="report-form"
