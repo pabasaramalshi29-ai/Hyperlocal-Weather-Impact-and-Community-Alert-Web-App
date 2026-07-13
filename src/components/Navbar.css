@@ -243,3 +243,40 @@
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+@media (max-width: 768px) {
+  .nav-menu {
+    display: none; /* Hide nav links on smaller screens */
+  }
+}
+
+/* Mobile Menu Icon Styling */
+.hamburger-btn {
+  display: none; /* Desktop  */
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 1.8rem;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .hamburger-btn {
+    display: block; /* Mobile  */
+  }
+  
+  
+  .nav-menu.mobile-open {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 70px;
+    left: 0;
+    width: 100%;
+    background: #0f172a;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+}
+
