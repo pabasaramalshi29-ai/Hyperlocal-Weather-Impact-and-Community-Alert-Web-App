@@ -1,4 +1,5 @@
-/* App.css */
+/* App.css - Modern Aurora Glow Background + Full Styling */
+
 * {
   margin: 0;
   padding: 0;
@@ -7,33 +8,107 @@
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  background: #0f172a; /* Base dark color */
+  /* Subtle dot grid for modern tech feel */
+  background-image: radial-gradient(circle at center, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
   color: #f1f5f9;
   min-height: 100vh;
+  overflow-x: hidden;
+  position: relative; /* Required for absolute positioning of glow orbs */
 }
 
-/* Container */
+/* ============================================
+   🎨 ANIMATED GLOWING ORBS (Background) 
+   ============================================ */
+/* These create a beautiful moving aurora/nebula effect behind everything */
+body::before,
+body::after {
+  content: '';
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.5;
+  z-index: -1; /* Sits strictly behind all content */
+  width: 60%;
+  height: 60%;
+  pointer-events: none; /* So users can click through */
+}
+
+/* 🌟 Orb 1 - Blue to Purple (ANIMATION NAME: floatOrb1) */
+body::before {
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  top: -20%;
+  left: -20%;
+  animation: floatOrb1 20s ease-in-out infinite alternate;
+}
+
+/* 🌟 Orb 2 - Cyan to Pink (ANIMATION NAME: floatOrb2) */
+body::after {
+  background: linear-gradient(135deg, #06b6d4, #ec4899);
+  bottom: -20%;
+  right: -20%;
+  animation: floatOrb2 25s ease-in-out infinite alternate;
+}
+
+/* ----- Floating animations for the orbs ----- */
+@keyframes floatOrb1 {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(15%, 20%) scale(1.2);
+  }
+  66% {
+    transform: translate(-10%, 30%) scale(0.9);
+  }
+  100% {
+    transform: translate(10%, -15%) scale(1.1);
+  }
+}
+
+@keyframes floatOrb2 {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(-20%, -25%) scale(1.3);
+  }
+  66% {
+    transform: translate(25%, -5%) scale(0.8);
+  }
+  100% {
+    transform: translate(-15%, 20%) scale(1.2);
+  }
+}
+
+/* Container - Ensure all content sits above the glow */
 .container {
   max-width: 1280px;
   margin: 0 auto;
   padding: 0 24px;
+  position: relative;
+  z-index: 1;
 }
 
-/* Navbar */
+/* ============================================
+   🧭 NAVBAR (Fixed for Mobile)
+   ============================================ */
 .navbar {
-  background: rgba(15, 23, 42, 0.95);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 1000;
 }
 
 .navbar .container {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 24px;
+  padding: 14px 24px;
 }
 
 .logo {
@@ -43,45 +118,56 @@ body {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .logo i {
-  margin-right: 8px;
   color: #60a5fa;
   background: none;
   -webkit-background-clip: unset;
   background-clip: unset;
+  font-size: 1.4rem;
 }
 
 .nav-menu {
   display: flex;
   gap: 32px;
   list-style: none;
+  align-items: center;
 }
 
 .nav-menu a {
   color: #cbd5e1;
   text-decoration: none;
   font-weight: 500;
-  transition: color 0.2s;
+  font-size: 0.95rem;
+  transition: color 0.2s ease;
+  padding: 6px 0;
+  position: relative;
 }
 
 .nav-menu a:hover {
   color: #60a5fa;
 }
 
-.nav-menu .active {
+.nav-menu a.active {
   color: #60a5fa;
   border-bottom: 2px solid #60a5fa;
   padding-bottom: 4px;
 }
 
-/* Hero Section */
+/* ============================================
+   🏠 HERO SECTION
+   ============================================ */
 .hero {
   text-align: center;
   padding: 60px 0 40px;
-  background: linear-gradient(135deg, rgba(96, 165, 250, 0.1), rgba(167, 139, 250, 0.05));
+  background: rgba(15, 23, 42, 0.3);
+  backdrop-filter: blur(4px);
   border-radius: 0 0 32px 32px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .hero h1 {
@@ -111,37 +197,43 @@ body {
 .search-bar input {
   flex: 1;
   padding: 14px 20px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 48px;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.06);
   color: #f1f5f9;
   font-size: 1rem;
   outline: none;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
 }
 
 .search-bar input:focus {
   border-color: #60a5fa;
   background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 20px rgba(96, 165, 250, 0.1);
 }
 
 .search-bar button {
-  padding: 14px 24px;
+  padding: 14px 28px;
   border: none;
   border-radius: 48px;
   background: linear-gradient(135deg, #3b82f6, #8b5cf6);
   color: white;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s, opacity 0.2s;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .search-bar button:hover {
-  transform: scale(1.02);
-  opacity: 0.9;
+  transform: scale(1.03);
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
 }
 
-/* Dashboard */
+/* ============================================
+   📊 DASHBOARD
+   ============================================ */
 .dashboard {
   padding: 48px 0;
 }
@@ -152,23 +244,32 @@ body {
   gap: 24px;
 }
 
-.weather-card, .alert-banner {
+.weather-card,
+.alert-banner {
   background: rgba(30, 41, 59, 0.6);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-radius: 24px;
-  padding: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: transform 0.2s;
+  padding: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.3s ease;
 }
 
-.weather-card:hover, .alert-banner:hover {
-  transform: translateY(-2px);
+.weather-card:hover,
+.alert-banner:hover {
+  transform: translateY(-4px);
+  border-color: rgba(96, 165, 250, 0.2);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
 }
 
-.weather-card h2, .alert-banner h2 {
+.weather-card h2,
+.alert-banner h2 {
   font-size: 1.25rem;
   margin-bottom: 20px;
   color: #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .weather-info {
@@ -179,20 +280,38 @@ body {
 
 .weather-info > div {
   text-align: center;
-  padding: 12px;
+  padding: 16px;
   background: rgba(255, 255, 255, 0.05);
   border-radius: 16px;
   flex: 1;
+  transition: all 0.3s ease;
+}
+
+.weather-info > div:hover {
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .weather-info i {
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   color: #60a5fa;
-  margin-right: 8px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.weather-info .value {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+.weather-info .label {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  margin-top: 4px;
 }
 
 .alert-banner {
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(168, 85, 247, 0.2));
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(168, 85, 247, 0.1));
   border-left: 4px solid #ef4444;
 }
 
@@ -202,21 +321,25 @@ body {
 
 .alert-btn {
   margin-top: 16px;
-  padding: 10px 20px;
+  padding: 10px 24px;
   background: transparent;
   border: 1px solid #ef4444;
   border-radius: 32px;
   color: #fca5a5;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
+  font-weight: 500;
 }
 
 .alert-btn:hover {
   background: #ef4444;
   color: white;
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3);
 }
 
-/* Alerts Page */
+/* ============================================
+   ⚠️ ALERTS PAGE
+   ============================================ */
 .alerts-section {
   padding: 48px 0;
   min-height: 80vh;
@@ -240,34 +363,39 @@ body {
   background: rgba(30, 41, 59, 0.6);
   backdrop-filter: blur(10px);
   border-radius: 16px;
-  padding: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: all 0.2s;
+  padding: 20px 24px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: all 0.3s ease;
 }
 
 .alert-card:hover {
-  transform: translateX(4px);
-  border-color: rgba(96, 165, 250, 0.5);
+  transform: translateX(6px);
+  border-color: rgba(96, 165, 250, 0.3);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
 
 .alert-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .alert-header h3 {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   color: #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .severity {
-  padding: 4px 12px;
+  padding: 4px 14px;
   border-radius: 32px;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 600;
   text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .severity.high {
@@ -287,16 +415,13 @@ body {
 
 .alert-card p {
   color: #94a3b8;
-  margin-top: 8px;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
 }
 
-.alert-card i {
-  width: 24px;
-  color: #60a5fa;
-}
-
-/* Map Page */
+/* ============================================
+   🗺️ MAP PAGE
+   ============================================ */
 .map-section {
   padding: 32px 0;
 }
@@ -307,7 +432,7 @@ body {
 
 .map-header h1 {
   font-size: 1.75rem;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 
 .subtext {
@@ -316,26 +441,27 @@ body {
 
 .map-wrapper {
   background: rgba(30, 41, 59, 0.6);
+  backdrop-filter: blur(10px);
   border-radius: 24px;
   padding: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-/*  */
 .map-container {
   position: relative;
-  height: 500px; /**/
-  background: #1e293b; /* gradient dark color  */
+  height: 500px;
+  background: rgba(15, 23, 42, 0.6);
   border-radius: 16px;
   overflow: hidden;
-  z-index: 1; 
+  z-index: 1;
 }
 
 #map {
   width: 100%;
-  height: 500px; /* 100%  pixel  */
+  height: 500px;
 }
-/* Custom markers overlay */
+
+/* ----- Custom markers (ANIMATION NAME: pulseMarker) ----- */
 .map-marker {
   position: absolute;
   width: 20px;
@@ -348,7 +474,7 @@ body {
 }
 
 .map-marker:hover {
-  transform: translate(-50%, -50%) scale(1.2);
+  transform: translate(-50%, -50%) scale(1.3);
 }
 
 .map-marker span {
@@ -359,14 +485,32 @@ body {
   animation: pulseMarker 2s ease-out infinite;
 }
 
-.marker-danger span { background: #ef4444; box-shadow: 0 0 10px #ef4444; }
-.marker-warning span { background: #f59e0b; box-shadow: 0 0 10px #f59e0b; }
-.marker-safe span { background: #10b981; box-shadow: 0 0 10px #10b981; }
+.marker-danger span {
+  background: #ef4444;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
+}
+.marker-warning span {
+  background: #f59e0b;
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.6);
+}
+.marker-safe span {
+  background: #10b981;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+}
 
 @keyframes pulseMarker {
-  0% { transform: scale(0.8); opacity: 1; }
-  50% { transform: scale(1.2); opacity: 0.8; }
-  100% { transform: scale(0.8); opacity: 1; }
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
 }
 
 /* Control Panel */
@@ -378,10 +522,11 @@ body {
   backdrop-filter: blur(12px);
   border-radius: 16px;
   padding: 12px 16px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
-  gap: 16px;
+  gap: 12px;
   z-index: 20;
+  flex-wrap: wrap;
 }
 
 .panel-title {
@@ -390,6 +535,7 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
+  font-size: 0.9rem;
 }
 
 .panel-item {
@@ -402,14 +548,17 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
+  color: #94a3b8;
 }
 
 .panel-item:hover {
-  background: rgba(96, 165, 250, 0.2);
+  background: rgba(96, 165, 250, 0.15);
   color: #60a5fa;
 }
 
-/* Report Page */
+/* ============================================
+   📝 REPORT PAGE
+   ============================================ */
 .report-section {
   padding: 48px 0;
   min-height: 80vh;
@@ -424,10 +573,10 @@ body {
   max-width: 600px;
   margin: 0 auto;
   background: rgba(30, 41, 59, 0.6);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(12px);
   border-radius: 24px;
-  padding: 32px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .report-form .form-group {
@@ -439,24 +588,25 @@ body {
 .report-form .form-group textarea {
   width: 100%;
   padding: 14px 16px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.05);
   color: #f1f5f9;
   font-size: 1rem;
   outline: none;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
 }
 
 .report-form .form-group textarea {
-  min-height: 100px;
+  min-height: 120px;
   resize: vertical;
 }
 
 .report-form .form-group input:focus,
 .report-form .form-group textarea:focus {
   border-color: #60a5fa;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 20px rgba(96, 165, 250, 0.05);
 }
 
 .report-form .form-group label {
@@ -464,18 +614,19 @@ body {
   left: 16px;
   top: 14px;
   color: #94a3b8;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
   pointer-events: none;
+  font-size: 0.95rem;
 }
 
 .report-form .form-group input:focus + label,
 .report-form .form-group input:not(:placeholder-shown) + label,
 .report-form .form-group textarea:focus + label,
 .report-form .form-group textarea:not(:placeholder-shown) + label {
-  transform: translateY(-24px) scale(0.85);
+  transform: translateY(-26px) scale(0.85);
   color: #60a5fa;
   background: #1e293b;
-  padding: 0 6px;
+  padding: 0 8px;
 }
 
 .submit-btn {
@@ -488,39 +639,168 @@ body {
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s, opacity 0.2s;
+  transition: all 0.3s ease;
 }
 
 .submit-btn:hover {
   transform: scale(1.01);
-  opacity: 0.9;
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
 }
 
-/* Responsive */
+/* ============================================
+   ⏳ LOADING (ANIMATION NAME: spin)
+   ============================================ */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  font-size: 1.2rem;
+  color: #94a3b8;
+  gap: 12px;
+}
+
+.loading i {
+  color: #60a5fa;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================
+   🎨 SCROLLBAR
+   ============================================ */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* ============================================
+   🗺️ LEAFLET OVERRIDES
+   ============================================ */
+.leaflet-container {
+  z-index: 1 !important;
+}
+.leaflet-control-container {
+  z-index: 1000 !important;
+}
+.control-panel {
+  z-index: 1100 !important;
+}
+
+/* ============================================
+   📱 RESPONSIVE DESIGN
+   ============================================ */
+
+/* Tablet */
+@media (max-width: 992px) {
+  .nav-menu {
+    gap: 20px;
+  }
+  .nav-menu a {
+    font-size: 0.9rem;
+  }
+}
+
+/* Mobile (🔥 Navbar Fix applied here) */
 @media (max-width: 768px) {
- 
-  
+  /* ✅ THIS FIXES THE NAVBAR BREAKING ON MOBILE */
+  .navbar .container {
+    flex-direction: row !important;
+    padding: 12px 16px;
+  }
+
+  .nav-menu {
+    gap: 16px;
+  }
+  .nav-menu a {
+    font-size: 0.85rem;
+  }
+
   .hero h1 {
     font-size: 2rem;
   }
-  
+  .hero p {
+    font-size: 1rem;
+  }
+
   .dashboard .container {
     grid-template-columns: 1fr;
   }
-  
+
   .weather-info {
     flex-direction: column;
   }
-  
+  .weather-info > div {
+    padding: 12px;
+  }
+
   .control-panel {
     flex-wrap: wrap;
     bottom: 10px;
     right: 10px;
     left: 10px;
+    padding: 10px 12px;
   }
-  
+  .panel-item {
+    font-size: 0.75rem;
+    padding: 6px 12px;
+  }
+
   .report-form {
     padding: 20px;
     margin: 0 16px;
+  }
+
+  .map-container {
+    height: 350px;
+  }
+  #map {
+    height: 350px;
+  }
+}
+
+/* Very small phones */
+@media (max-width: 480px) {
+  .navbar .container {
+    padding: 10px 12px;
+  }
+  .logo {
+    font-size: 1.2rem;
+  }
+  .logo i {
+    font-size: 1.1rem;
+  }
+  .nav-menu {
+    gap: 12px;
+  }
+  .nav-menu a {
+    font-size: 0.8rem;
+  }
+  .hero h1 {
+    font-size: 1.6rem;
+  }
+  .hero {
+    padding: 40px 0 30px;
+  }
+  .search-bar {
+    flex-direction: column;
+    padding: 0 16px;
+  }
+  .search-bar button {
+    justify-content: center;
   }
 }
