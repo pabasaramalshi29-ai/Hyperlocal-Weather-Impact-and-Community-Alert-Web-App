@@ -244,8 +244,3 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-@media (max-width: 768px) {
-  .nav-menu {
-    display: none; /* Hide nav links on smaller screens */
-  }
-}
