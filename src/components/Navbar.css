@@ -245,30 +245,9 @@
 }
 
 @media (max-width: 768px) {
+  /* මෙනුව සැඟවීම */
   .nav-menu {
-    display: none; /* Hide nav links on smaller screens */
-  }
-}
-
-/* Mobile Menu Icon Styling */
-.hamburger-btn {
-  display: none; /* Desktop  */
-  background: none;
-  border: none;
-  color: #ffffff;
-  font-size: 1.8rem;
-  cursor: pointer;
-  padding: 0.5rem;
-}
-
-@media (max-width: 768px) {
-  .hamburger-btn {
-    display: block; /* Mobile  */
-  }
-  
-  
-  .nav-menu.mobile-open {
-    display: flex;
+    display: none;
     flex-direction: column;
     position: absolute;
     top: 70px;
@@ -277,6 +256,28 @@
     background: #0f172a;
     padding: 1rem 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    gap: 0; /* පරතරය අඩු කිරීම */
+  }
+
+  /* මෙනුව විවෘත වූ විට පෙන්වීම */
+  .nav-menu.mobile-open {
+    display: flex;
+  }
+
+  /* nav-link සඳහා full width ලබා දීම */
+  .nav-link {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    border-radius: 0;
+  }
+
+  /* hamburger බොත්තම පෙන්වීම */
+  .hamburger-btn {
+    display: block;
+  }
+
+  /* User profile සහ login btn සඳහා ඉඩ සලසමින් මෙනුවට යටින් තැබීම */
+  .nav-right-section {
+    padding: 0.5rem 1.5rem;
   }
 }
-
