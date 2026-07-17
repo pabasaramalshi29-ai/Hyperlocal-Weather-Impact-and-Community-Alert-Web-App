@@ -4,6 +4,7 @@ import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import { SRI_LANKA_CITIES } from '../data/cities';
+import './Report.css';
 
 const Register = () => {
   const navigate = useNavigate();

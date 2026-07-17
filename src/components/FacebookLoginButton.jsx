@@ -52,8 +52,30 @@ const FacebookLoginButton = ({ onLogin }) => {
   };
 
   return (
-    <button className="facebook-signup-button" onClick={handleClick}>
-      Continue with Facebook
+    <button
+      type="button"
+      className="facebook-signup-button"
+      onClick={handleClick}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '10px',
+        width: '100%',
+        minHeight: '48px',
+        borderRadius: '12px',
+        border: '1px solid rgba(255,255,255,0.14)',
+        background: 'rgba(12, 15, 192, 0.88)',
+        color: '#f8fafc',
+        fontWeight: 700,
+        fontSize: '0.95rem',
+        cursor: 'pointer',
+        fontFamily: 'Inter, sans-serif',
+        transition: 'all 0.2s ease',
+      }}
+    >
+      <span aria-hidden="true" style={{ fontSize: '1.05rem' }}>f</span>
+      <span>Continue with Facebook</span>
     </button>
   );
 };
