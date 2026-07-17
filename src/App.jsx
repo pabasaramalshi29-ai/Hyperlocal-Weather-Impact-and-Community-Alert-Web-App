@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar';
-import Footer from './components/Footer'; // ← Footer import කරන්න
+import ParticleCanvas from './components/ParticleCanvas';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import Home from './pages/Home';
@@ -51,7 +51,7 @@ function AppContent() {
 
   return (
     <Router>
-      {/* Navbar - authenticated users පමණයි */}
+      {isAuthenticated && <ParticleCanvas />}
       {isAuthenticated && <Navbar />}
       
       {/* Main Content */}

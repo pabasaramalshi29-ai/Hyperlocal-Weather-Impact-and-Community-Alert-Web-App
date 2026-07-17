@@ -1,173 +1,28 @@
-/* App.css - Modern Aurora Glow Background + Full Styling */
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: #0f172a; /* Base dark color */
-  /* Subtle dot grid for modern tech feel */
-  background-image: radial-gradient(circle at center, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
-  color: #f1f5f9;
-  min-height: 100vh;
-  overflow-x: hidden;
-  position: relative; /* Required for absolute positioning of glow orbs */
-}
-
-/* ============================================
-   🎨 ANIMATED GLOWING ORBS (Background) 
-   ============================================ */
-/* These create a beautiful moving aurora/nebula effect behind everything */
-body::before,
-body::after {
-  content: '';
-  position: fixed;
-  border-radius: 50%;
-  filter: blur(120px);
-  opacity: 0.5;
-  z-index: -1; /* Sits strictly behind all content */
-  width: 60%;
-  height: 60%;
-  pointer-events: none; /* So users can click through */
-}
-
-/* 🌟 Orb 1 - Blue to Purple (ANIMATION NAME: floatOrb1) */
-body::before {
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-  top: -20%;
-  left: -20%;
-  animation: floatOrb1 20s ease-in-out infinite alternate;
-}
-
-/* 🌟 Orb 2 - Cyan to Pink (ANIMATION NAME: floatOrb2) */
-body::after {
-  background: linear-gradient(135deg, #06b6d4, #ec4899);
-  bottom: -20%;
-  right: -20%;
-  animation: floatOrb2 25s ease-in-out infinite alternate;
-}
-
-/* ----- Floating animations for the orbs ----- */
-@keyframes floatOrb1 {
-  0% {
-    transform: translate(0, 0) scale(1);
-  }
-  33% {
-    transform: translate(15%, 20%) scale(1.2);
-  }
-  66% {
-    transform: translate(-10%, 30%) scale(0.9);
-  }
-  100% {
-    transform: translate(10%, -15%) scale(1.1);
-  }
-}
-
-@keyframes floatOrb2 {
-  0% {
-    transform: translate(0, 0) scale(1);
-  }
-  33% {
-    transform: translate(-20%, -25%) scale(1.3);
-  }
-  66% {
-    transform: translate(25%, -5%) scale(0.8);
-  }
-  100% {
-    transform: translate(-15%, 20%) scale(1.2);
-  }
-}
-
-/* Container - Ensure all content sits above the glow */
 .container {
   max-width: 1280px;
   margin: 0 auto;
   padding: 0 24px;
-  position: relative;
-  z-index: 1;
+  width: 100%;
 }
 
-/* ============================================
-   🧭 NAVBAR (Fixed for Mobile)
-   ============================================ */
-.navbar {
-  background: rgba(15, 23, 42, 0.92);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  position: sticky;
-  top: 0;
-  z-index: 1000;
+.page-wrapper {
+  padding-top: 80px;
+  min-height: 100vh;
 }
 
-.navbar .container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 14px 24px;
-}
-
-.logo {
-  font-size: 1.5rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, #60a5fa, #a78bfa);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.logo i {
-  color: #60a5fa;
-  background: none;
-  -webkit-background-clip: unset;
-  background-clip: unset;
-  font-size: 1.4rem;
-}
-
-.nav-menu {
-  display: flex;
-  gap: 32px;
-  list-style: none;
-  align-items: center;
-}
-
-.nav-menu a {
-  color: #cbd5e1;
-  text-decoration: none;
-  font-weight: 500;
-  font-size: 0.95rem;
-  transition: color 0.2s ease;
-  padding: 6px 0;
-  position: relative;
-}
-
-.nav-menu a:hover {
-  color: #60a5fa;
-}
-
-.nav-menu a.active {
-  color: #60a5fa;
-  border-bottom: 2px solid #60a5fa;
-  padding-bottom: 4px;
-}
-
-/* ============================================
-   🏠 HERO SECTION
-   ============================================ */
 .hero {
   text-align: center;
-  padding: 60px 0 40px;
-  background: rgba(15, 23, 42, 0.3);
-  backdrop-filter: blur(4px);
-  border-radius: 0 0 32px 32px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 60px 24px 48px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(14,165,233,0.12) 0%, transparent 70%);
+  pointer-events: none;
 }
 
 .hero h1 {
@@ -219,25 +74,27 @@ body::after {
 .search-bar input {
   flex: 1;
   padding: 14px 20px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 48px;
-  background: rgba(255, 255, 255, 0.06);
-  color: #f1f5f9;
-  font-size: 1rem;
+  border: 1px solid rgba(14,165,233,0.3);
+  border-radius: 50px;
+  background: rgba(10,22,40,0.8);
+  color: #f0f9ff;
+  font-size: 0.95rem;
+  font-family: 'Inter', sans-serif;
   outline: none;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(8px);
 }
 
 .search-bar input:focus {
-  border-color: #60a5fa;
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 0 20px rgba(96, 165, 250, 0.1);
+  border-color: #0ea5e9;
+  box-shadow: 0 0 0 3px rgba(14,165,233,0.15);
+  background: rgba(14,30,55,0.9);
 }
 
 .search-bar input::placeholder { color: #475569; }
 
 .search-bar button {
-  padding: 14px 28px;
+  padding: 14px 26px;
   border: none;
   border-radius: 50px;
   background: linear-gradient(135deg, #0ea5e9, #7c3aed);
@@ -246,20 +103,19 @@ body::after {
   font-weight: 600;
   font-size: 0.95rem;
   cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 20px rgba(14,165,233,0.3);
+  white-space: nowrap;
 }
 
-.search-bar button:hover {
-  transform: scale(1.03);
-  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
+.search-bar button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(14,165,233,0.45);
 }
 
-/* ============================================
-   📊 DASHBOARD
-   ============================================ */
+.search-bar button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ============ DASHBOARD ============ */
 .dashboard {
   padding: 32px 0 80px;
 }
@@ -270,32 +126,49 @@ body::after {
   gap: 24px;
 }
 
-.weather-card,
-.alert-banner {
-  background: rgba(30, 41, 59, 0.6);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+/* ============ GLASS CARDS ============ */
+.weather-card, .alert-banner {
+  background: rgba(10, 22, 40, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-radius: 24px;
   padding: 28px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(14,165,233,0.15);
   transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
-.weather-card:hover,
-.alert-banner:hover {
+.weather-card::before {
+  content: '';
+  position: absolute;
+  top: -1px; left: -1px; right: -1px; bottom: -1px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, rgba(14,165,233,0.2), transparent 50%, rgba(124,58,237,0.1));
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.weather-card:hover::before { opacity: 1; }
+.weather-card:hover {
   transform: translateY(-4px);
-  border-color: rgba(96, 165, 250, 0.2);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 12px 40px rgba(14,165,233,0.15), 0 4px 16px rgba(0,0,0,0.4);
+  border-color: rgba(14,165,233,0.35);
 }
 
-.weather-card h2,
-.alert-banner h2 {
-  font-size: 1.25rem;
-  margin-bottom: 20px;
+.weather-card h2, .alert-banner h2 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-bottom: 24px;
   color: #e2e8f0;
   display: flex;
   align-items: center;
   gap: 10px;
+  position: relative;
+  z-index: 1;
 }
 
 .weather-card h2 i { color: #0ea5e9; }
@@ -311,34 +184,24 @@ body::after {
 
 .weather-info > div {
   text-align: center;
-  padding: 16px;
-  background: rgba(255, 255, 255, 0.05);
+  padding: 16px 12px;
+  background: rgba(255,255,255,0.04);
   border-radius: 16px;
   flex: 1;
-  transition: all 0.3s ease;
+  border: 1px solid rgba(255,255,255,0.06);
+  transition: all 0.2s ease;
 }
 
 .weather-info > div:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(14,165,233,0.08);
+  border-color: rgba(14,165,233,0.2);
 }
 
 .weather-info i {
-  font-size: 1.8rem;
-  color: #60a5fa;
+  font-size: 1.4rem;
   display: block;
   margin-bottom: 8px;
-}
-
-.weather-info .value {
-  font-size: 1.4rem;
-  font-weight: 600;
-  color: #f1f5f9;
-}
-
-.weather-info .label {
-  font-size: 0.8rem;
-  color: #94a3b8;
-  margin-top: 4px;
+  color: #38bdf8;
 }
 
 .weather-info span {
@@ -350,8 +213,8 @@ body::after {
 
 /* Alert Banner */
 .alert-banner {
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(168, 85, 247, 0.1));
-  border-left: 4px solid #ef4444;
+  background: linear-gradient(135deg, rgba(239,68,68,0.12), rgba(124,58,237,0.08));
+  border: 1px solid rgba(239,68,68,0.25);
 }
 
 .alert-banner::after {
@@ -386,26 +249,104 @@ body::after {
 }
 
 .alert-btn {
-  margin-top: 16px;
-  padding: 10px 24px;
+  margin-top: 20px;
+  padding: 10px 22px;
   background: transparent;
   border: 1px solid rgba(239,68,68,0.5);
   border-radius: 50px;
   color: #fca5a5;
   cursor: pointer;
-  transition: all 0.3s ease;
-  font-weight: 500;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 0.88rem;
+  transition: all 0.25s ease;
+  position: relative;
+  z-index: 1;
 }
 
 .alert-btn:hover {
-  background: #ef4444;
-  color: white;
-  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3);
+  background: rgba(239,68,68,0.15);
+  border-color: #ef4444;
+  transform: translateX(4px);
 }
 
-/* ============================================
-   ⚠️ ALERTS PAGE
-   ============================================ */
+/* ============ QUICK STATS (Home) ============ */
+.quick-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.stat-item {
+  text-align: center;
+  padding: 12px 8px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+.stat-item .stat-label {
+  font-size: 0.75rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.stat-item .stat-value {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #38bdf8;
+}
+
+/* ============ CTA CARDS ROW ============ */
+.cta-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.cta-card {
+  background: rgba(10,22,40,0.75);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px;
+  padding: 24px 20px;
+  text-align: center;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.3s ease;
+  display: block;
+}
+
+.cta-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(14,165,233,0.35);
+  box-shadow: 0 12px 32px rgba(14,165,233,0.1);
+}
+
+.cta-card .cta-icon {
+  font-size: 2rem;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.cta-card h3 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  margin-bottom: 6px;
+}
+
+.cta-card p { font-size: 0.82rem; color: #64748b; }
+
+/* ============ ALERTS PAGE ============ */
 .alerts-section {
   padding: 96px 0 80px;
   min-height: 80vh;
@@ -441,14 +382,14 @@ body::after {
   backdrop-filter: blur(12px);
   border-radius: 16px;
   padding: 20px 24px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  transition: all 0.3s ease;
+  border: 1px solid rgba(255,255,255,0.07);
+  transition: all 0.25s ease;
 }
 
 .alert-card:hover {
   transform: translateX(6px);
-  border-color: rgba(96, 165, 250, 0.3);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  border-color: rgba(14,165,233,0.3);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
 }
 
 .alert-header {
@@ -456,10 +397,13 @@ body::after {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .alert-header h3 {
-  font-size: 1.1rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.05rem;
   color: #e2e8f0;
   display: flex;
   align-items: center;
@@ -468,11 +412,11 @@ body::after {
 
 .severity {
   padding: 4px 14px;
-  border-radius: 32px;
-  font-size: 0.7rem;
-  font-weight: 600;
+  border-radius: 50px;
+  font-size: 0.72rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.8px;
 }
 
 .severity.high   { background: rgba(239,68,68,0.15);  color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); }
@@ -482,63 +426,38 @@ body::after {
 .alert-card p  { color: #94a3b8; font-size: 0.88rem; line-height: 1.6; }
 .alert-card i  { width: 20px; color: #0ea5e9; }
 
-.severity.low {
-  background: rgba(34, 197, 94, 0.2);
-  color: #86efac;
-}
-
-.alert-card p {
-  color: #94a3b8;
-  font-size: 0.95rem;
-  line-height: 1.5;
-}
-
-/* ============================================
-   🗺️ MAP PAGE
-   ============================================ */
-.map-section {
-  padding: 32px 0;
-}
-
-.map-header {
-  margin-bottom: 24px;
-}
+/* ============ MAP PAGE ============ */
+.map-section { padding: 96px 0 80px; }
 
 .map-header { margin-bottom: 20px; }
 .map-header h1 {
   font-family: 'Outfit', sans-serif;
   font-size: 1.75rem;
-  margin-bottom: 4px;
-}
-
-.subtext {
-  color: #94a3b8;
+  font-weight: 700;
+  color: #f0f9ff;
+  margin-bottom: 6px;
 }
 .subtext { color: #64748b; font-size: 0.9rem; }
 
 .map-wrapper {
-  background: rgba(30, 41, 59, 0.6);
-  backdrop-filter: blur(10px);
+  background: rgba(10,22,40,0.75);
   border-radius: 24px;
   padding: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(14,165,233,0.15);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
 }
 
 .map-container {
   position: relative;
-  height: 500px;
-  background: rgba(15, 23, 42, 0.6);
+  height: 520px;
+  background: #0a1628;
   border-radius: 16px;
   overflow: hidden;
   z-index: 1;
 }
 
-#map {
-  width: 100%;
-  height: 500px;
-}
+#map { width: 100%; height: 100%; }
 
-/* ----- Custom markers (ANIMATION NAME: pulseMarker) ----- */
 .map-marker {
   position: absolute;
   width: 20px; height: 20px;
@@ -551,44 +470,14 @@ body::after {
 .map-marker:hover { transform: translate(-50%, -50%) scale(1.3); }
 .map-marker span { display: block; width: 100%; height: 100%; border-radius: 50%; animation: pulseMarker 2s ease-out infinite; }
 
-.map-marker:hover {
-  transform: translate(-50%, -50%) scale(1.3);
-}
-
-.map-marker span {
-  display: block;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  animation: pulseMarker 2s ease-out infinite;
-}
-
-.marker-danger span {
-  background: #ef4444;
-  box-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
-}
-.marker-warning span {
-  background: #f59e0b;
-  box-shadow: 0 0 20px rgba(245, 158, 11, 0.6);
-}
-.marker-safe span {
-  background: #10b981;
-  box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
-}
+.marker-danger span  { background: #ef4444; box-shadow: 0 0 12px #ef4444; }
+.marker-warning span { background: #f59e0b; box-shadow: 0 0 12px #f59e0b; }
+.marker-safe span    { background: #10b981; box-shadow: 0 0 12px #10b981; }
 
 @keyframes pulseMarker {
-  0% {
-    transform: scale(0.8);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.3);
-    opacity: 0.7;
-  }
-  100% {
-    transform: scale(0.8);
-    opacity: 1;
-  }
+  0%   { transform: scale(0.8); opacity: 1; }
+  50%  { transform: scale(1.3); opacity: 0.7; }
+  100% { transform: scale(0.8); opacity: 1; }
 }
 
 .control-panel {
@@ -598,20 +487,10 @@ body::after {
   backdrop-filter: blur(12px);
   border-radius: 16px;
   padding: 12px 16px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(14,165,233,0.2);
   display: flex;
   gap: 12px;
-  z-index: 20;
-  flex-wrap: wrap;
-}
-
-.panel-title {
-  font-weight: 600;
-  color: #cbd5e1;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.9rem;
+  z-index: 1100 !important;
 }
 
 .panel-item {
@@ -628,32 +507,28 @@ body::after {
 }
 .panel-item:hover { background: rgba(14,165,233,0.15); color: #38bdf8; }
 
-.panel-item:hover {
-  background: rgba(96, 165, 250, 0.15);
-  color: #60a5fa;
-}
+/* ============ REPORT PAGE ============ */
+.report-section { padding: 96px 0 80px; min-height: 80vh; }
+.report-section h1 { text-align: center; margin-bottom: 32px; }
 
-/* ============================================
-   📝 REPORT PAGE
-   ============================================ */
-.report-section {
-  padding: 48px 0;
-  min-height: 80vh;
-}
-
-.report-section h1 {
-  text-align: center;
-  margin-bottom: 32px;
+.report-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  max-width: 900px;
+  margin: 0 auto;
+  align-items: start;
 }
 
 .report-form {
   max-width: 620px;
   margin: 0 auto;
-  background: rgba(30, 41, 59, 0.6);
-  backdrop-filter: blur(12px);
+  background: rgba(10,22,40,0.8);
+  backdrop-filter: blur(16px);
   border-radius: 24px;
   padding: 36px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(14,165,233,0.15);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.4);
 }
 
 .report-form .form-group { position: relative; margin-bottom: 28px; }
@@ -662,47 +537,41 @@ body::after {
 .report-form .form-group textarea {
   width: 100%;
   padding: 14px 16px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255,255,255,0.1);
   border-radius: 12px;
   background: rgba(255,255,255,0.04);
   color: #f0f9ff;
   font-size: 0.95rem;
   font-family: 'Inter', sans-serif;
   outline: none;
-  transition: all 0.3s ease;
-}
-
-.report-form .form-group textarea {
-  min-height: 120px;
-  resize: vertical;
+  transition: all 0.25s ease;
 }
 .report-form .form-group textarea { min-height: 110px; resize: vertical; }
 
 .report-form .form-group input:focus,
 .report-form .form-group textarea:focus {
-  border-color: #60a5fa;
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 0 20px rgba(96, 165, 250, 0.05);
+  border-color: #0ea5e9;
+  background: rgba(14,165,233,0.05);
+  box-shadow: 0 0 0 3px rgba(14,165,233,0.1);
 }
 
 .report-form .form-group label {
   position: absolute;
-  left: 16px;
-  top: 14px;
-  color: #94a3b8;
-  transition: all 0.2s ease;
+  left: 16px; top: 14px;
+  color: #64748b;
+  transition: all 0.2s;
   pointer-events: none;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
 }
 
 .report-form .form-group input:focus + label,
 .report-form .form-group input:not(:placeholder-shown) + label,
 .report-form .form-group textarea:focus + label,
 .report-form .form-group textarea:not(:placeholder-shown) + label {
-  transform: translateY(-26px) scale(0.85);
-  color: #60a5fa;
-  background: #1e293b;
-  padding: 0 8px;
+  transform: translateY(-24px) scale(0.82);
+  color: #0ea5e9;
+  background: #0a1628;
+  padding: 0 6px;
 }
 
 .submit-btn {
@@ -716,169 +585,73 @@ body::after {
   font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 20px rgba(14,165,233,0.3);
+  letter-spacing: 0.3px;
 }
 .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(14,165,233,0.45); }
 
-.submit-btn:hover {
-  transform: scale(1.01);
-  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
-}
-
-/* ============================================
-   ⏳ LOADING (ANIMATION NAME: spin)
-   ============================================ */
+/* ============ LOADING ============ */
 .loading {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 200px;
-  font-size: 1.2rem;
-  color: #94a3b8;
-  gap: 12px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.1rem;
+  color: #64748b;
 }
 
-.loading i {
-  color: #60a5fa;
-  animation: spin 1s linear infinite;
+/* ============ LEAFLET FIX ============ */
+.leaflet-container { z-index: 1 !important; }
+.leaflet-control-container { z-index: 1000 !important; }
+
+/* ============ RESPONSIVE — TABLET ============ */
+@media (max-width: 1024px) {
+  .cta-row { grid-template-columns: repeat(3, 1fr); }
+  .quick-stats { grid-template-columns: repeat(4, 1fr); }
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* ============================================
-   🎨 SCROLLBAR
-   ============================================ */
-::-webkit-scrollbar {
-  width: 8px;
-}
-::-webkit-scrollbar-track {
-  background: #1e293b;
-}
-::-webkit-scrollbar-thumb {
-  background: #475569;
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #64748b;
-}
-
-/* ============================================
-   🗺️ LEAFLET OVERRIDES
-   ============================================ */
-.leaflet-container {
-  z-index: 1 !important;
-}
-.leaflet-control-container {
-  z-index: 1000 !important;
-}
-.control-panel {
-  z-index: 1100 !important;
-}
-
-/* ============================================
-   📱 RESPONSIVE DESIGN
-   ============================================ */
-
-/* Tablet */
-@media (max-width: 992px) {
-  .nav-menu {
-    gap: 20px;
-  }
-  .nav-menu a {
-    font-size: 0.9rem;
-  }
-}
-
-/* Mobile (🔥 Navbar Fix applied here) */
+/* ============ RESPONSIVE — MOBILE ============ */
 @media (max-width: 768px) {
-  /* ✅ THIS FIXES THE NAVBAR BREAKING ON MOBILE */
-  .navbar .container {
-    flex-direction: row !important;
-    padding: 12px 16px;
-  }
+  .page-wrapper { padding-top: 64px; padding-bottom: 72px; }
 
-  .nav-menu {
-    gap: 16px;
-  }
-  .nav-menu a {
-    font-size: 0.85rem;
-  }
+  .hero { padding: 36px 16px 32px; }
 
-  .hero h1 {
-    font-size: 2rem;
-  }
-  .hero p {
-    font-size: 1rem;
-  }
-
-  .dashboard .container {
-    grid-template-columns: 1fr;
-  }
-
-  .weather-info {
+  .search-bar {
     flex-direction: column;
+    gap: 10px;
   }
-  .weather-info > div {
-    padding: 12px;
-  }
+  .search-bar input,
+  .search-bar button { width: 100%; border-radius: 14px; }
+
+  .dashboard .container { grid-template-columns: 1fr; }
+  .weather-info { flex-wrap: wrap; }
+  .weather-info > div { min-width: calc(50% - 8px); }
+
+  .quick-stats { grid-template-columns: repeat(2, 1fr); }
+  .cta-row { grid-template-columns: 1fr 1fr; }
+
+  .report-grid { grid-template-columns: 1fr !important; }
+  .report-grid > * { width: 100%; }
+  .report-form { padding: 24px 20px; margin: 0 16px; }
+
+  .map-container { height: 380px; }
 
   .control-panel {
     flex-wrap: wrap;
-    bottom: 10px;
-    right: 10px;
-    left: 10px;
-    padding: 10px 12px;
-  }
-  .panel-item {
-    font-size: 0.75rem;
-    padding: 6px 12px;
+    bottom: 10px; right: 10px; left: 10px;
   }
 
-  .report-form {
-    padding: 20px;
-    margin: 0 16px;
-  }
-
-  .map-container {
-    height: 350px;
-  }
-  #map {
-    height: 350px;
+  .alerts-section, .map-section, .report-section, .dashboard {
+    padding-bottom: 90px;
   }
 }
 
-/* Very small phones */
 @media (max-width: 480px) {
-  .navbar .container {
-    padding: 10px 12px;
-  }
-  .logo {
-    font-size: 1.2rem;
-  }
-  .logo i {
-    font-size: 1.1rem;
-  }
-  .nav-menu {
-    gap: 12px;
-  }
-  .nav-menu a {
-    font-size: 0.8rem;
-  }
-  .hero h1 {
-    font-size: 1.6rem;
-  }
-  .hero {
-    padding: 40px 0 30px;
-  }
-  .search-bar {
-    flex-direction: column;
-    padding: 0 16px;
-  }
-  .search-bar button {
-    justify-content: center;
-  }
+  .container { padding: 0 16px; }
+  .hero h1 { font-size: 1.6rem; }
+  .cta-row { grid-template-columns: 1fr; }
+  .quick-stats { grid-template-columns: repeat(2, 1fr); }
+  .weather-card, .alert-banner { padding: 20px; }
 }
