@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -15,13 +14,11 @@ const NAV_LINKS = [
 const Navbar = () => {
   const { user, logout } = useAuth();
   const [showDropdown, setShowDropdown] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Close mobile menu on route change
+  // Close dropdown on route change
   useEffect(() => {
-    setMenuOpen(false);
     setShowDropdown(false);
   }, [location.pathname]);
 
@@ -38,7 +35,6 @@ const Navbar = () => {
 
   const handleLogout = () => {
     setShowDropdown(false);
-    setMenuOpen(false);
     logout();
     navigate('/login');
   };
@@ -69,10 +65,10 @@ const Navbar = () => {
             ))}
           </ul>
 
-          {/* Right: user + hamburger */}
+          {/* Right: user */}
           <div className="nav-right-section">
 
-            {/* User Profile (desktop) */}
+            {/* User Profile */}
             {user ? (
               <div className="user-profile-container">
                 <div
@@ -105,58 +101,9 @@ const Navbar = () => {
               </NavLink>
             )}
 
-            {/* Hamburger (mobile) */}
-            <button
-              className={`hamburger-btn ${menuOpen ? 'open' : ''}`}
-              onClick={() => setMenuOpen(!menuOpen)}
-              aria-label="Toggle navigation menu"
-            >
-              <span className="ham-line"></span>
-              <span className="ham-line"></span>
-              <span className="ham-line"></span>
-            </button>
-
           </div>
         </div>
       </nav>
-
-      {/* Mobile Slide-down Menu */}
-      <div className={`mobile-menu ${menuOpen ? 'open' : ''}`}>
-        {user && (
-          <>
-            <div className="mobile-user-info">
-              {user.picture && (
-                <img src={user.picture} alt={user.name} className="mobile-user-avatar" />
-              )}
-              <div>
-                <div className="mobile-user-name">{user.name}</div>
-                <div className="mobile-user-email">{user.email || ''}</div>
-              </div>
-            </div>
-            <div className="mobile-menu-divider"></div>
-          </>
-        )}
-
-        {NAV_LINKS.map((link) => (
-          <NavLink
-            key={link.to}
-            to={link.to}
-            end={link.end}
-            className={({ isActive }) => isActive ? 'mobile-nav-link active' : 'mobile-nav-link'}
-          >
-            <i className={`fas ${link.icon}`}></i> {link.label}
-          </NavLink>
-        ))}
-
-        {user && (
-          <>
-            <div className="mobile-menu-divider"></div>
-            <button onClick={handleLogout} className="mobile-logout-btn">
-              <i className="fas fa-sign-out-alt"></i> Logout
-            </button>
-          </>
-        )}
-      </div>
 
       {/* Bottom Tab Bar (mobile) */}
       {user && (
