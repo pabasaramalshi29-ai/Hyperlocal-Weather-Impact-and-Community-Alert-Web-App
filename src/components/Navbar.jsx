@@ -1,13 +1,37 @@
-import { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Navbar.css';
+
+const NAV_LINKS = [
+  { to: '/',                 icon: 'fa-home',          label: 'Home',     end: true  },
+  { to: '/map',              icon: 'fa-map-marked-alt', label: 'Map'               },
+  { to: '/alerts',           icon: 'fa-exclamation-triangle', label: 'Alerts'     },
+  { to: '/report',           icon: 'fa-edit',          label: 'Report'            },
+  { to: '/district-register',icon: 'fa-user-plus',     label: 'Register'          },
+];
 
 const Navbar = () => {
   const { user, logout } = useAuth();
   const [showDropdown, setShowDropdown] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Close dropdown on route change
+  useEffect(() => {
+    setShowDropdown(false);
+  }, [location.pathname]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handler = (e) => {
+      if (!e.target.closest('.user-profile-container')) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
   const handleLogout = () => {
     setShowDropdown(false);
@@ -15,64 +39,40 @@ const Navbar = () => {
     navigate('/login');
   };
 
-  const closeMobileMenu = () => setIsMenuOpen(false);
-
   return (
-    <nav className="navbar">
-      <div className="container navbar-content">
-        
-        {/* Logo */}
-        <div className="logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
-          <i className="fas fa-cloud-sun logo-icon"></i>
-          <span>Hyper<span className="logo-gradient">Weather</span></span>
-        </div>
+    <>
+      <nav className="navbar">
+        <div className="navbar-content">
 
-        {/* Hamburger Toggle */}
-        <button 
-          className={`hamburger-toggle ${isMenuOpen ? 'open' : ''}`} 
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          aria-label="Toggle navigation"
-        >
-          <span></span><span></span><span></span>
-        </button>
+          {/* Logo */}
+          <div className="logo" onClick={() => navigate('/')}>
+            <i className="fas fa-cloud-bolt logo-icon"></i>
+            <span>Hyper<span className="logo-gradient">Weather</span></span>
+          </div>
 
-        {/* Navigation Menu */}
-        <ul className={`nav-menu ${isMenuOpen ? 'open' : ''}`}>
-          <li>
-            <NavLink to="/" end className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'} onClick={closeMobileMenu}>
-              <i className="fas fa-home"></i> <span>Home</span>
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/map" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'} onClick={closeMobileMenu}>
-              <i className="fas fa-map-marked-alt"></i> <span>Map</span>
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/alerts" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'} onClick={closeMobileMenu}>
-              <i className="fas fa-exclamation-triangle"></i> <span>Alerts</span>
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/report" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'} onClick={closeMobileMenu}>
-              <i className="fas fa-edit"></i> <span>Report</span>
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/district-register" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'} onClick={closeMobileMenu}>
-              <i className="fas fa-user-plus"></i> <span>Register</span>
-            </NavLink>
-          </li>
-        </ul>
-        
-        {/* Right Section: User Profile & Dropdown */}
-        <div className="nav-right-section">
-          {user ? (
-            <>
-              {/* Desktop: Profile with dropdown */}
-              <div className="user-profile-container desktop-only">
-                <div 
-                  className="user-profile-toggle" 
+          {/* Desktop Nav */}
+          <ul className="nav-menu">
+            {NAV_LINKS.map((link) => (
+              <li key={link.to}>
+                <NavLink
+                  to={link.to}
+                  end={link.end}
+                  className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}
+                >
+                  <i className={`fas ${link.icon}`}></i> {link.label}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+
+          {/* Right: user */}
+          <div className="nav-right-section">
+
+            {/* User Profile */}
+            {user ? (
+              <div className="user-profile-container">
+                <div
+                  className="user-profile-toggle"
                   onClick={() => setShowDropdown(!showDropdown)}
                 >
                   {user.picture && (
@@ -95,21 +95,33 @@ const Navbar = () => {
                   </div>
                 )}
               </div>
+            ) : (
+              <NavLink to="/login" className="login-btn">
+                <i className="fas fa-sign-in-alt"></i> Sign In
+              </NavLink>
+            )}
 
-              {/* Mobile: Only Logout Icon */}
-              <button onClick={handleLogout} className="mobile-logout-btn" aria-label="Logout">
-                <i className="fas fa-sign-out-alt"></i>
-              </button>
-            </>
-          ) : (
-            <NavLink to="/login" className="login-btn">
-              <i className="fas fa-sign-in-alt"></i> <span>Sign In</span>
-            </NavLink>
-          )}
+          </div>
         </div>
+      </nav>
 
-      </div>
-    </nav>
+      {/* Bottom Tab Bar (mobile) */}
+      {user && (
+        <nav className="bottom-tab-bar">
+          {NAV_LINKS.map((link) => (
+            <NavLink
+              key={link.to}
+              to={link.to}
+              end={link.end}
+              className={({ isActive }) => isActive ? 'tab-item active' : 'tab-item'}
+            >
+              <i className={`fas ${link.icon}`}></i>
+              <span>{link.label}</span>
+            </NavLink>
+          ))}
+        </nav>
+      )}
+    </>
   );
 };
 
