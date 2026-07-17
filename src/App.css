@@ -611,7 +611,7 @@
 
 /* ============ RESPONSIVE — MOBILE ============ */
 @media (max-width: 768px) {
-  .page-wrapper { padding-top: 64px; padding-bottom: 72px; }
+  .page-wrapper { padding-top: 3dvb; padding-bottom: 72px; }
 
   .hero { padding: 36px 16px 32px; }
 
