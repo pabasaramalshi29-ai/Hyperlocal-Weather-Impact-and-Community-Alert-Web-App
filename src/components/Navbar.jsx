@@ -1,3 +1,4 @@
+// components/Navbar.jsx
 import { useState, useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -14,15 +15,15 @@ const NAV_LINKS = [
 const Navbar = () => {
   const { user, logout } = useAuth();
   const [showDropdown, setShowDropdown] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Close dropdown on route change
   useEffect(() => {
     setShowDropdown(false);
+    setIsMenuOpen(false);
   }, [location.pathname]);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handler = (e) => {
       if (!e.target.closest('.user-profile-container')) {
@@ -39,89 +40,98 @@ const Navbar = () => {
     navigate('/login');
   };
 
+  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+  const closeMenu = () => setIsMenuOpen(false);
+
   return (
-    <>
-      <nav className="navbar">
-        <div className="navbar-content">
+    <nav className="navbar">
+      <div className="navbar-content">
 
-          {/* Logo */}
-          <div className="logo" onClick={() => navigate('/')}>
-            <i className="fas fa-cloud-bolt logo-icon"></i>
-            <span>Hyper<span className="logo-gradient">Weather</span></span>
-          </div>
-
-          {/* Desktop Nav */}
-          <ul className="nav-menu">
-            {NAV_LINKS.map((link) => (
-              <li key={link.to}>
-                <NavLink
-                  to={link.to}
-                  end={link.end}
-                  className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}
-                >
-                  <i className={`fas ${link.icon}`}></i> {link.label}
-                </NavLink>
-              </li>
-            ))}
-          </ul>
-
-          {/* Right: user */}
-          <div className="nav-right-section">
-
-            {/* User Profile */}
-            {user ? (
-              <div className="user-profile-container">
-                <div
-                  className="user-profile-toggle"
-                  onClick={() => setShowDropdown(!showDropdown)}
-                >
-                  {user.picture && (
-                    <img src={user.picture} alt={user.name} className="user-avatar-img" />
-                  )}
-                  <span className="user-profile-name">{user.name}</span>
-                  <i className={`fas fa-chevron-down arrow-icon ${showDropdown ? 'rotate' : ''}`}></i>
-                </div>
-
-                {showDropdown && (
-                  <div className="profile-dropdown-menu">
-                    <div className="dropdown-user-info">
-                      <p className="welcome-text">Signed in as</p>
-                      <p className="user-email-text">{user.email || user.name}</p>
-                    </div>
-                    <hr className="dropdown-divider" />
-                    <button onClick={handleLogout} className="dropdown-logout-btn">
-                      <i className="fas fa-sign-out-alt"></i> Logout
-                    </button>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <NavLink to="/login" className="login-btn">
-                <i className="fas fa-sign-in-alt"></i> Sign In
-              </NavLink>
-            )}
-
-          </div>
+        {/* Logo */}
+        <div className="logo" onClick={() => navigate('/')}>
+          <i className="fas fa-cloud-bolt logo-icon"></i>
+          <span>Hyper<span className="logo-gradient">Weather</span></span>
         </div>
-      </nav>
 
-      {/* Bottom Tab Bar (mobile) */}
-      {user && (
-        <nav className="bottom-tab-bar">
+        {/* Hamburger Toggle - Mobile only */}
+        <button 
+          className={`hamburger-toggle ${isMenuOpen ? 'open' : ''}`} 
+          onClick={toggleMenu}
+          aria-label="Toggle navigation"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+        {/* Desktop Nav */}
+        <ul className="nav-menu">
           {NAV_LINKS.map((link) => (
-            <NavLink
-              key={link.to}
-              to={link.to}
-              end={link.end}
-              className={({ isActive }) => isActive ? 'tab-item active' : 'tab-item'}
-            >
-              <i className={`fas ${link.icon}`}></i>
-              <span>{link.label}</span>
-            </NavLink>
+            <li key={link.to}>
+              <NavLink
+                to={link.to}
+                end={link.end}
+                className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}
+              >
+                <i className={`fas ${link.icon}`}></i> {link.label}
+              </NavLink>
+            </li>
           ))}
-        </nav>
-      )}
-    </>
+        </ul>
+
+        {/* Right: user */}
+        <div className="nav-right-section">
+          {user ? (
+            <div className="user-profile-container">
+              <div
+                className="user-profile-toggle"
+                onClick={() => setShowDropdown(!showDropdown)}
+              >
+                {user.picture && (
+                  <img src={user.picture} alt={user.name} className="user-avatar-img" />
+                )}
+                <span className="user-profile-name">{user.name}</span>
+                <i className={`fas fa-chevron-down arrow-icon ${showDropdown ? 'rotate' : ''}`}></i>
+              </div>
+
+              {showDropdown && (
+                <div className="profile-dropdown-menu">
+                  <div className="dropdown-user-info">
+                    <p className="welcome-text">Signed in as</p>
+                    <p className="user-email-text">{user.email || user.name}</p>
+                  </div>
+                  <hr className="dropdown-divider" />
+                  <button onClick={handleLogout} className="dropdown-logout-btn">
+                    <i className="fas fa-sign-out-alt"></i> Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <NavLink to="/login" className="login-btn">
+              <i className="fas fa-sign-in-alt"></i> Sign In
+            </NavLink>
+          )}
+        </div>
+
+      </div>
+
+      {/* Mobile Menu - Hamburger open wita penenna */}
+      <div className={`mobile-menu ${isMenuOpen ? 'open' : ''}`}>
+        {NAV_LINKS.map((link) => (
+          <NavLink
+            key={link.to}
+            to={link.to}
+            end={link.end}
+            className={({ isActive }) => isActive ? 'mobile-link active' : 'mobile-link'}
+            onClick={closeMenu}
+          >
+            <i className={`fas ${link.icon}`}></i>
+            <span>{link.label}</span>
+          </NavLink>
+        ))}
+      </div>
+    </nav>
   );
 };
 
