@@ -171,26 +171,48 @@ body::after {
 }
 
 .hero h1 {
-  font-size: 3rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, #f1f5f9, #94a3b8);
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(1.8rem, 5vw, 3.2rem);
+  font-weight: 800;
+ 
+  background: linear-gradient(
+    135deg,
+    #f0f9ff 0%,
+    #38bdf8 25%,
+    #a78bfa 50%,
+    #38bdf8 75%,
+    #f0f9ff 100%
+  );
+  background-size: 300% 300%;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  margin-bottom: 16px;
+  animation: heroGradientShift 4s ease infinite;
+  margin-bottom: 14px;
+  letter-spacing: -0.5px;
+}
+
+@keyframes heroGradientShift {
+  0%   { background-position: 0%   50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0%   50%; }
 }
 
 .hero p {
-  font-size: 1.2rem;
+  font-size: clamp(0.95rem, 2vw, 1.15rem);
   color: #94a3b8;
-  margin-bottom: 32px;
+  margin-bottom: 36px;
+  max-width: 520px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
+/* Search Bar */
 .search-bar {
   display: flex;
   justify-content: center;
-  gap: 12px;
-  max-width: 500px;
+  gap: 10px;
+  max-width: 520px;
   margin: 0 auto;
 }
 
@@ -212,13 +234,17 @@ body::after {
   box-shadow: 0 0 20px rgba(96, 165, 250, 0.1);
 }
 
+.search-bar input::placeholder { color: #475569; }
+
 .search-bar button {
   padding: 14px 28px;
   border: none;
-  border-radius: 48px;
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  border-radius: 50px;
+  background: linear-gradient(135deg, #0ea5e9, #7c3aed);
   color: white;
+  font-family: 'Outfit', sans-serif;
   font-weight: 600;
+  font-size: 0.95rem;
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
@@ -235,7 +261,7 @@ body::after {
    📊 DASHBOARD
    ============================================ */
 .dashboard {
-  padding: 48px 0;
+  padding: 32px 0 80px;
 }
 
 .dashboard .container {
@@ -272,10 +298,15 @@ body::after {
   gap: 10px;
 }
 
+.weather-card h2 i { color: #0ea5e9; }
+
+/* Weather Info Grid */
 .weather-info {
   display: flex;
   justify-content: space-around;
-  gap: 16px;
+  gap: 12px;
+  position: relative;
+  z-index: 1;
 }
 
 .weather-info > div {
@@ -310,21 +341,56 @@ body::after {
   margin-top: 4px;
 }
 
+.weather-info span {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  color: #cbd5e1;
+  font-weight: 500;
+}
+
+/* Alert Banner */
 .alert-banner {
   background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(168, 85, 247, 0.1));
   border-left: 4px solid #ef4444;
 }
 
-.alert-banner h2 {
-  color: #fca5a5;
+.alert-banner::after {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, #ef4444, #f59e0b);
+  border-radius: 24px 0 0 24px;
+}
+
+.alert-banner:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(239,68,68,0.15);
+  border-color: rgba(239,68,68,0.4);
+}
+
+.alert-banner h2 { color: #fca5a5; }
+.alert-banner h2 i { color: #f59e0b; animation: alertPulse 2s ease-in-out infinite; }
+
+@keyframes alertPulse {
+  0%,100% { transform: scale(1); opacity: 1; }
+  50%      { transform: scale(1.15); opacity: 0.8; }
+}
+
+.alert-banner p {
+  color: #94a3b8;
+  font-size: 0.93rem;
+  line-height: 1.65;
+  position: relative;
+  z-index: 1;
 }
 
 .alert-btn {
   margin-top: 16px;
   padding: 10px 24px;
   background: transparent;
-  border: 1px solid #ef4444;
-  border-radius: 32px;
+  border: 1px solid rgba(239,68,68,0.5);
+  border-radius: 50px;
   color: #fca5a5;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -341,27 +407,38 @@ body::after {
    ⚠️ ALERTS PAGE
    ============================================ */
 .alerts-section {
-  padding: 48px 0;
+  padding: 96px 0 80px;
   min-height: 80vh;
 }
 
-.alerts-section h1 {
-  font-size: 2rem;
+.section-heading {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 800;
+  background: linear-gradient(135deg, #f0f9ff, #38bdf8);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 8px;
+}
+
+.section-sub {
+  color: #64748b;
+  font-size: 0.9rem;
   margin-bottom: 32px;
-  text-align: center;
 }
 
 .alerts-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  max-width: 800px;
+  gap: 14px;
+  max-width: 860px;
   margin: 0 auto;
 }
 
 .alert-card {
-  background: rgba(30, 41, 59, 0.6);
-  backdrop-filter: blur(10px);
+  background: rgba(10,22,40,0.8);
+  backdrop-filter: blur(12px);
   border-radius: 16px;
   padding: 20px 24px;
   border: 1px solid rgba(255, 255, 255, 0.06);
@@ -398,15 +475,12 @@ body::after {
   letter-spacing: 0.5px;
 }
 
-.severity.high {
-  background: rgba(239, 68, 68, 0.2);
-  color: #fca5a5;
-}
+.severity.high   { background: rgba(239,68,68,0.15);  color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); }
+.severity.medium { background: rgba(245,158,11,0.15); color: #fcd34d; border: 1px solid rgba(245,158,11,0.3); }
+.severity.low    { background: rgba(16,185,129,0.15); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.3); }
 
-.severity.medium {
-  background: rgba(245, 158, 11, 0.2);
-  color: #fcd34d;
-}
+.alert-card p  { color: #94a3b8; font-size: 0.88rem; line-height: 1.6; }
+.alert-card i  { width: 20px; color: #0ea5e9; }
 
 .severity.low {
   background: rgba(34, 197, 94, 0.2);
@@ -430,7 +504,9 @@ body::after {
   margin-bottom: 24px;
 }
 
+.map-header { margin-bottom: 20px; }
 .map-header h1 {
+  font-family: 'Outfit', sans-serif;
   font-size: 1.75rem;
   margin-bottom: 4px;
 }
@@ -438,6 +514,7 @@ body::after {
 .subtext {
   color: #94a3b8;
 }
+.subtext { color: #64748b; font-size: 0.9rem; }
 
 .map-wrapper {
   background: rgba(30, 41, 59, 0.6);
@@ -464,14 +541,15 @@ body::after {
 /* ----- Custom markers (ANIMATION NAME: pulseMarker) ----- */
 .map-marker {
   position: absolute;
-  width: 20px;
-  height: 20px;
+  width: 20px; height: 20px;
   border-radius: 50%;
   transform: translate(-50%, -50%);
   z-index: 10;
   cursor: pointer;
   transition: transform 0.2s;
 }
+.map-marker:hover { transform: translate(-50%, -50%) scale(1.3); }
+.map-marker span { display: block; width: 100%; height: 100%; border-radius: 50%; animation: pulseMarker 2s ease-out infinite; }
 
 .map-marker:hover {
   transform: translate(-50%, -50%) scale(1.3);
@@ -513,12 +591,10 @@ body::after {
   }
 }
 
-/* Control Panel */
 .control-panel {
   position: absolute;
-  bottom: 20px;
-  right: 20px;
-  background: rgba(15, 23, 42, 0.95);
+  bottom: 20px; right: 20px;
+  background: rgba(10,22,40,0.95);
   backdrop-filter: blur(12px);
   border-radius: 16px;
   padding: 12px 16px;
@@ -540,16 +616,17 @@ body::after {
 
 .panel-item {
   padding: 8px 16px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 32px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 50px;
   cursor: pointer;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   transition: all 0.2s;
   display: flex;
   align-items: center;
   gap: 8px;
   color: #94a3b8;
 }
+.panel-item:hover { background: rgba(14,165,233,0.15); color: #38bdf8; }
 
 .panel-item:hover {
   background: rgba(96, 165, 250, 0.15);
@@ -570,7 +647,7 @@ body::after {
 }
 
 .report-form {
-  max-width: 600px;
+  max-width: 620px;
   margin: 0 auto;
   background: rgba(30, 41, 59, 0.6);
   backdrop-filter: blur(12px);
@@ -579,10 +656,7 @@ body::after {
   border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-.report-form .form-group {
-  position: relative;
-  margin-bottom: 28px;
-}
+.report-form .form-group { position: relative; margin-bottom: 28px; }
 
 .report-form .form-group input,
 .report-form .form-group textarea {
@@ -590,9 +664,10 @@ body::after {
   padding: 14px 16px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.05);
-  color: #f1f5f9;
-  font-size: 1rem;
+  background: rgba(255,255,255,0.04);
+  color: #f0f9ff;
+  font-size: 0.95rem;
+  font-family: 'Inter', sans-serif;
   outline: none;
   transition: all 0.3s ease;
 }
@@ -601,6 +676,7 @@ body::after {
   min-height: 120px;
   resize: vertical;
 }
+.report-form .form-group textarea { min-height: 110px; resize: vertical; }
 
 .report-form .form-group input:focus,
 .report-form .form-group textarea:focus {
@@ -631,16 +707,18 @@ body::after {
 
 .submit-btn {
   width: 100%;
-  padding: 14px;
+  padding: 15px;
   border: none;
-  border-radius: 32px;
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  border-radius: 50px;
+  background: linear-gradient(135deg, #0ea5e9, #7c3aed);
   color: white;
+  font-family: 'Outfit', sans-serif;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
 }
+.submit-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(14,165,233,0.45); }
 
 .submit-btn:hover {
   transform: scale(1.01);

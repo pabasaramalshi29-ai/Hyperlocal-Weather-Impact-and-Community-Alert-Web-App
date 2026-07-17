@@ -1,4 +1,4 @@
-// pages/Report.jsx
+
 import { useState, useEffect, useRef } from 'react';
 import './Report.css';
 import {
@@ -9,7 +9,6 @@ import {
 
 const ALERT_THRESHOLD = 3;
 
-// ── Severity levels config ───────────────────────────────────────────────────
 const SEVERITY_LEVELS = [
   {
     key: 'high',
@@ -336,14 +335,11 @@ const Report = () => {
             </div>
           )}
 
-          {/* ── Simple submit success ─────────────────────────────────── */}
           {submitted && !emailTriggered && (
             <div style={styles.successBanner}>
               ✅ Alert submitted successfully! Thank you for helping your community.
             </div>
           )}
-
-          {/* ── District alert progress bar ───────────────────────────── */}
           {showProgress && (
             <div style={styles.progressWrap}>
               <div style={styles.progressLabel}>
@@ -397,8 +393,7 @@ const Report = () => {
                 <span style={styles.selectArrow}>▼</span>
               </div>
 
-              {/* Location */}
-              {/* ── Severity Selector ───────────────────────────────── */}
+              
               <div style={{ marginBottom: '20px' }}>
                 <label style={{ display:'block', fontSize:'0.82rem', color:'#94a3b8', marginBottom:'10px', fontWeight:600, letterSpacing:'0.03em' }}>
                   <i className="fas fa-exclamation-triangle" style={{ marginRight:6, color:'#f59e0b' }}></i>

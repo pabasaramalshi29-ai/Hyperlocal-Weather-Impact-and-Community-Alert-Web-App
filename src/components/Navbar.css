@@ -1,8 +1,7 @@
-/* Navbar Main Base styling */
+
 .navbar {
   position: fixed;
-  top: 0;
-  left: 0;
+  top: 0; left: 0;
   width: 100%;
   height: 70px;
   background: rgba(15, 23, 42, 0.85);
@@ -12,15 +11,14 @@
   z-index: 1000;
   display: flex;
   align-items: center;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  box-sizing: border-box;
+  font-family: 'Inter', system-ui, sans-serif;
 }
 
 .navbar-content {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 0 1.5rem;
+  padding: 0 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -45,19 +43,23 @@
 }
 
 .logo-gradient {
-  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  background: linear-gradient(135deg, #38bdf8, #7c3aed);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-/* Navigation Menu */
+@keyframes pulseIcon {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.8; transform: scale(1.08); }
+}
+
 .nav-menu {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 4px;
   list-style: none;
-  margin: 0;
-  padding: 0;
+  margin: 0; padding: 0;
 }
 
 .nav-link {
@@ -66,30 +68,26 @@
   gap: 0.5rem;
   color: #94a3b8;
   text-decoration: none;
-  font-size: 0.95rem;
+  font-size: 0.88rem;
   font-weight: 500;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  transition: all 0.25s ease;
+  padding: 8px 14px;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
-.nav-link i {
-  font-size: 0.95rem;
-  transition: transform 0.2s ease;
-}
+.nav-link i { font-size: 0.85rem; transition: transform 0.2s ease; }
 
 .nav-link:hover {
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.05);
+  color: #f0f9ff;
+  background: rgba(255,255,255,0.06);
 }
 
-.nav-link:hover i {
-  transform: translateY(-1px);
-}
+.nav-link:hover i { transform: translateY(-1px); }
 
 .nav-link.active {
   color: #38bdf8;
-  background: rgba(56, 189, 248, 0.1);
+  background: rgba(14,165,233,0.1);
   font-weight: 600;
 }
 
@@ -104,23 +102,20 @@
 .login-btn {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 7px;
   background: linear-gradient(135deg, #0ea5e9, #0284c7);
   color: #ffffff;
-  padding: 0.55rem 1.25rem;
+  padding: 8px 18px;
   border-radius: 50px;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.87rem;
   text-decoration: none;
-  box-shadow: 0 4px 14px rgba(14, 165, 233, 0.3);
+  box-shadow: 0 4px 14px rgba(14,165,233,0.3);
   transition: all 0.25s ease;
   white-space: nowrap;
 }
 
-.login-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(14, 165, 233, 0.45);
-}
+.login-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(14,165,233,0.45); }
 
 /* User Profile (Desktop) */
 .user-profile-container {
@@ -130,23 +125,22 @@
 .user-profile-toggle {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 8px;
   cursor: pointer;
-  padding: 0.4rem 0.8rem;
+  padding: 6px 12px;
   border-radius: 50px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
   transition: all 0.2s ease;
 }
 
 .user-profile-toggle:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(56, 189, 248, 0.3);
+  background: rgba(255,255,255,0.07);
+  border-color: rgba(14,165,233,0.3);
 }
 
 .user-avatar-img {
-  width: 32px;
-  height: 32px;
+  width: 30px; height: 30px;
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid #38bdf8;
@@ -154,19 +148,16 @@
 
 .user-profile-name {
   color: #e2e8f0;
-  font-size: 0.9rem;
+  font-size: 0.87rem;
   font-weight: 500;
-  max-width: 120px;
-  text-overflow: ellipsis;
+  max-width: 110px;
   overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.arrow-icon {
-  color: #64748b;
-  font-size: 0.8rem;
-  transition: transform 0.2s ease;
-}
+.arrow-icon { color: #64748b; font-size: 0.75rem; transition: transform 0.2s ease; }
+.arrow-icon.rotate { transform: rotate(180deg); color: #38bdf8; }
 
 .arrow-icon.rotate {
   transform: rotate(180deg);
@@ -176,7 +167,7 @@
 /* Profile Dropdown */
 .profile-dropdown-menu {
   position: absolute;
-  top: 125%;
+  top: calc(100% + 10px);
   right: 0;
   width: 210px;
   background: #0f172a;
@@ -188,53 +179,58 @@
   z-index: 1100;
 }
 
-.dropdown-user-info {
-  padding: 0.4rem 0.6rem;
+@keyframes dropIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-.welcome-text {
-  font-size: 0.75rem;
-  color: #64748b;
-  margin: 0;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.user-email-text {
-  font-size: 0.85rem;
-  color: #cbd5e1;
-  margin: 0.2rem 0 0 0;
-  font-weight: 500;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.dropdown-divider {
-  border: 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  margin: 0.5rem 0;
-}
+.dropdown-user-info { padding: 6px 8px 10px; }
+.welcome-text { font-size: 0.7rem; color: #475569; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; }
+.user-email-text { font-size: 0.82rem; color: #cbd5e1; margin: 4px 0 0; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dropdown-divider { border: 0; border-top: 1px solid rgba(255,255,255,0.07); margin: 6px 0; }
 
 .dropdown-logout-btn {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 8px;
   width: 100%;
   padding: 0.55rem 0.6rem;
   color: #f87171;
   border: none;
   background: transparent;
-  font-size: 0.9rem;
+  font-size: 0.87rem;
   font-weight: 500;
   text-align: left;
   cursor: pointer;
-  border-radius: 6px;
+  border-radius: 8px;
   transition: all 0.2s ease;
+  font-family: 'Inter', sans-serif;
+}
+.dropdown-logout-btn:hover { background: rgba(248,113,113,0.08); }
+
+.hamburger-btn {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 38px; height: 38px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
 }
 
-.dropdown-logout-btn:hover {
-  background: rgba(248, 113, 113, 0.08);
+.hamburger-btn:hover { background: rgba(14,165,233,0.1); border-color: rgba(14,165,233,0.3); }
+
+.ham-line {
+  display: block;
+  width: 20px; height: 2px;
+  background: #94a3b8;
+  border-radius: 2px;
+  transition: all 0.3s ease;
 }
 
 /* Mobile Logout Button (only icon) */

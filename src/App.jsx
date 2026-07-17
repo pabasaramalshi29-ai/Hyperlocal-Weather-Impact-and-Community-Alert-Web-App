@@ -35,14 +35,16 @@ function AppContent() {
         justifyContent: 'center',
         alignItems: 'center',
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
-        color: '#60a5fa',
-        fontSize: '1.5rem',
+        background: 'radial-gradient(ellipse 80% 60% at 50% 0%, rgba(14,165,233,0.12) 0%, transparent 60%), #020817',
+        color: '#38bdf8',
+        fontSize: '1.2rem',
         fontWeight: '600',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        gap: '16px',
+        fontFamily: 'Outfit, sans-serif'
       }}>
-        <div style={{ fontSize: '3rem', marginBottom: '20px' }}>⚡</div>
-        <p>Loading Application...</p>
+        <div style={{ fontSize: '3.5rem', animation: 'none' }}>⛈️</div>
+        <p style={{ letterSpacing: '0.5px' }}>Loading HyperWeather…</p>
       </div>
     );
   }
