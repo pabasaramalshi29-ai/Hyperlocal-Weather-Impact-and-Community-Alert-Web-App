@@ -652,3 +652,44 @@
   .quick-stats { grid-template-columns: repeat(2, 1fr); }
   .weather-card, .alert-banner { padding: 20px; }
 }
+
+/* ============ FOOTER ============ */
+.footer {
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 24px 0;
+  margin-top: auto;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+  color: #94a3b8;
+  font-family: 'Inter', sans-serif;
+}
+
+.footer-copy {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.footer-tagline {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #64748b;
+  letter-spacing: 0.3px;
+}
+
+.footer-tagline i {
+  color: #60a5fa;
+  margin-right: 6px;
+}
+
