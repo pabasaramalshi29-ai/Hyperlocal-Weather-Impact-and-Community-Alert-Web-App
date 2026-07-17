@@ -121,9 +121,11 @@ const Login = () => {
       </div>
 
       <div className="login-background">
-        <div className="weather-icon">☁️</div>
-        <div className="weather-icon">🌧️</div>
         <div className="weather-icon">⛈️</div>
+        <div className="weather-icon">🌊</div>
+        <div className="weather-icon">🌪️</div>
+        <div className="weather-icon">❄️</div>
+        <div className="weather-icon">🌤️</div>
       </div>
     </div>
   );
