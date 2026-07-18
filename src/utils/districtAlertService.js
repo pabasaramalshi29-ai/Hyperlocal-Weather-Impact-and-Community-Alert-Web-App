@@ -94,9 +94,28 @@ const higherSeverity = (a = 'medium', b = 'medium') => {
 const getDayKey = () =>
   new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Colombo' });
 
-// ── Deterministic per-district-per-day cluster doc id ────────────────────────
-const getClusterDocId = (district, dayKey = getDayKey()) =>
-  `${district.replace(/\s+/g, '_')}_${dayKey}`;
+const normalizeLocationKey = (text) =>
+  (text || '').trim().toLowerCase();
+
+const isSameExactLocation = (data, loc, location) => {
+  if (!data) return false;
+
+  const currentLocText = normalizeLocationKey(loc);
+  const existingLocText = normalizeLocationKey(data.loc);
+  const sameLocText = currentLocText && existingLocText && currentLocText === existingLocText;
+
+  const currentCoords = location || {};
+  const existingCoords = data.location || {};
+  const sameCoords =
+    typeof existingCoords.lat === 'number' &&
+    typeof existingCoords.lng === 'number' &&
+    typeof currentCoords.lat === 'number' &&
+    typeof currentCoords.lng === 'number' &&
+    Math.abs(existingCoords.lat - currentCoords.lat) < 0.0001 &&
+    Math.abs(existingCoords.lng - currentCoords.lng) < 0.0001;
+
+  return sameLocText || sameCoords;
+};
 
 // ── Send one email via EmailJS ─────────────────────────────────────────────
 const sendAlertEmail = async ({ toEmail, toName, district, alertCount, description, location }) => {
@@ -142,7 +161,7 @@ const sendAlertEmail = async ({ toEmail, toName, district, alertCount, descripti
 };
 
 // ── Get TODAY's report count for a district (for the progress bar in Report.jsx) ──
-export const getTodayDistrictReportCount = async (district) => {
+export const getTodayDistrictReportCount = async (district, loc, location) => {
   if (!district) return 0;
   try {
     const dayKey = getDayKey();
@@ -152,7 +171,13 @@ export const getTodayDistrictReportCount = async (district) => {
       where('dayKey', '==', dayKey)
     );
     const snap = await getDocs(q);
-    return snap.size;
+    if (!loc && !location) return snap.size;
+
+    const sameLocationCount = snap.docs.filter((docSnap) =>
+      isSameExactLocation(docSnap.data(), loc, location)
+    ).length;
+
+    return sameLocationCount;
   } catch (err) {
     console.error('Error fetching today district report count:', err);
     return 0;
@@ -160,7 +185,7 @@ export const getTodayDistrictReportCount = async (district) => {
 };
 
 // ── Main function: write a separate alert doc for every report,
-// while still tracking same-district daily progress and confirmation.
+// while still tracking same-location daily progress and confirmation.
 export const submitDistrictReport = async ({
   district,
   description,
@@ -183,10 +208,13 @@ export const submitDistrictReport = async ({
     const snap = await getDocs(reportsQuery);
     const existingReports = snap.docs;
 
-    const currentTotal = existingReports.length + 1;
-    const wasAlreadyConfirmed = existingReports.some((d) => d.data().status === 'confirmed');
-    const status = wasAlreadyConfirmed || currentTotal >= ALERT_THRESHOLD ? 'confirmed' : 'pending';
-    const mergedSeverity = existingReports.reduce(
+    const sameLocationReports = existingReports.filter((docSnap) =>
+      isSameExactLocation(docSnap.data(), loc, location)
+    );
+    const currentLocationCount = sameLocationReports.length + 1;
+    const wasLocationConfirmed = sameLocationReports.some((d) => d.data().status === 'confirmed');
+    const status = wasLocationConfirmed || currentLocationCount >= ALERT_THRESHOLD ? 'confirmed' : 'pending';
+    const mergedSeverity = sameLocationReports.reduce(
       (prev, d) => higherSeverity(prev, d.data()?.severity),
       severity
     );
@@ -195,7 +223,7 @@ export const submitDistrictReport = async ({
       title: 'Community Report',
       district,
       dayKey,
-      reportCount: currentTotal,
+      reportCount: currentLocationCount,
       status,
       severity: mergedSeverity,
       description,
@@ -208,12 +236,12 @@ export const submitDistrictReport = async ({
 
     const newAlertRef = await addDoc(alertsRef, alertData);
 
-    if (existingReports.length > 0) {
+    if (sameLocationReports.length > 0) {
       const batch = writeBatch(db);
-      existingReports.forEach((docSnap) => {
+      sameLocationReports.forEach((docSnap) => {
         const data = docSnap.data();
         batch.update(doc(db, 'alerts', docSnap.id), {
-          reportCount: currentTotal,
+          reportCount: currentLocationCount,
           status,
           severity: higherSeverity(data.severity, severity),
           updatedAt: serverTimestamp(),
@@ -223,10 +251,10 @@ export const submitDistrictReport = async ({
     }
 
     let usersNotified = 0;
-    const justConfirmed = !wasAlreadyConfirmed && status === 'confirmed';
+    const justConfirmed = !wasLocationConfirmed && status === 'confirmed';
 
     if (justConfirmed) {
-      console.log(`🚨 "${district}" hit ${ALERT_THRESHOLD} reports today — confirming + notifying residents.`);
+      console.log(`🚨 "${district}" at location "${loc}" hit ${ALERT_THRESHOLD} reports today — confirming + notifying residents.`);
 
       const usersQuery = query(collection(db, 'users'), where('district', '==', district));
       const usersSnap = await getDocs(usersQuery);
@@ -249,7 +277,7 @@ export const submitDistrictReport = async ({
       usersNotified = users.length;
     }
 
-    return { reportCount: currentTotal, status, justConfirmed, usersNotified };
+    return { reportCount: currentLocationCount, status, justConfirmed, usersNotified };
   } catch (err) {
     console.error('Error in submitDistrictReport:', err);
     return { reportCount: 0, status: 'pending', justConfirmed: false, error: err.message };

@@ -177,8 +177,8 @@ const Report = () => {
   const [emailTriggered, setEmailTriggered] = useState(false);
   const [emailsCount, setEmailsCount] = useState(0);
 
-  // District alert count tracking (live from Firestore)
-  const [districtCount, setDistrictCount] = useState(0);
+  // Exact location alert count tracking (live from Firestore)
+  const [locationCount, setLocationCount] = useState(0);
   const [loadingCount, setLoadingCount] = useState(false);
 
   // 📍 Coordinates selected from the map (Default: Kandy)
@@ -192,7 +192,7 @@ const Report = () => {
   // Load current alert count and auto-spot the district on the map
   useEffect(() => {
     if (!formData.district) {
-      setDistrictCount(0);
+      setLocationCount(0);
       return;
     }
 
@@ -210,10 +210,13 @@ const Report = () => {
     }
 
     setLoadingCount(true);
-    getTodayDistrictReportCount(formData.district)
-      .then((c) => setDistrictCount(c))
+    getTodayDistrictReportCount(formData.district, formData.location, {
+      lat: parseFloat(lat),
+      lng: parseFloat(lng),
+    })
+      .then((c) => setLocationCount(c))
       .finally(() => setLoadingCount(false));
-  }, [formData.district]);
+  }, [formData.district, formData.location, lat, lng]);
 
   // 🗺️ Mini Map
   useEffect(() => {
@@ -284,7 +287,7 @@ const Report = () => {
         setEmailTriggered(true);
         setEmailsCount(result.usersNotified || 0);
       }
-      setDistrictCount(result.reportCount || 0);
+      setLocationCount(result.reportCount || 0);
       setSubmitted(true);
       setSubmittedImageUrl(imageUrl);
       setSubmittedDistrict(formData.district);
@@ -310,8 +313,8 @@ const Report = () => {
   };
 
   // Progress bar helpers
-  const progressPct    = Math.min((districtCount / ALERT_THRESHOLD) * 100, 100);
-  const remaining      = ALERT_THRESHOLD - districtCount;
+const progressPct    = Math.min((locationCount / ALERT_THRESHOLD) * 100, 100);
+      const remaining      = ALERT_THRESHOLD - locationCount;
   const showProgress   = !!formData.district && !loadingCount;
 
   return (
@@ -387,17 +390,17 @@ const Report = () => {
                   <strong style={{ color: '#e2e8f0' }}>{formData.district}</strong>
                   {' '}— Alert Progress
                 </span>
-                <span style={{ color: districtCount >= ALERT_THRESHOLD - 1 ? '#f59e0b' : '#64748b' }}>
-                  {districtCount}/{ALERT_THRESHOLD} alerts today
-                  {districtCount > 0 && ` · ${remaining} more to trigger email`}
+                <span style={{ color: locationCount >= ALERT_THRESHOLD - 1 ? '#f59e0b' : '#64748b' }}>
+                  {locationCount}/{ALERT_THRESHOLD} alerts today
+                  {locationCount > 0 && ` · ${remaining} more to trigger email`}
                 </span>
               </div>
               <div style={styles.progressBar(progressPct)}>
                 <div style={styles.progressFill(progressPct)}></div>
               </div>
-              {districtCount >= ALERT_THRESHOLD - 1 && districtCount < ALERT_THRESHOLD && (
+              {locationCount >= ALERT_THRESHOLD - 1 && locationCount < ALERT_THRESHOLD && (
                 <p style={{ margin: '8px 0 0', fontSize: '0.78rem', color: '#f59e0b' }}>
-                  ⚠️ One more alert in this district will trigger an email to all registered residents!
+                  ⚠️ One more alert at this location will trigger an email to all registered residents!
                 </p>
               )}
             </div>
@@ -600,7 +603,7 @@ const Report = () => {
                   Reporting for <strong style={{ color: '#818cf8' }}>{formData.district}</strong> District
                   &nbsp;·&nbsp;
                   <span style={{ color: '#64748b' }}>
-                    {districtCount}/{ALERT_THRESHOLD} alerts
+                    {locationCount}/{ALERT_THRESHOLD} alerts
                   </span>
                 </div>
               )}
