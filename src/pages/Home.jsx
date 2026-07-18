@@ -32,8 +32,13 @@ const Home = () => {
         `https://api.openweathermap.org/data/2.5/weather?q=${location},LK&units=metric&appid=${API_KEY}`
       );
       const data = await res.json();
-      if (data.cod === 200) { setWeather(data); }
-      else { setError('City not found in Sri Lanka. Try: Colombo, Kandy, Galle, Jaffna.'); setWeather(null); }
+      if (data.cod === 200) {
+        setWeather(data);
+        setLocation('');
+      } else {
+        setError('City not found in Sri Lanka. Try: Colombo, Kandy, Galle, Jaffna.');
+        setWeather(null);
+      }
     } catch {
       setError('Failed to connect to weather service. Check your connection.');
     } finally { setLoading(false); }
