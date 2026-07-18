@@ -19,15 +19,15 @@
 
 import { db } from '../firebase';
 import {
-  doc,
-  getDoc,
-  setDoc,
+  addDoc,
   collection,
-  query,
-  where,
+  doc,
   getDocs,
+  query,
+  setDoc,
   serverTimestamp,
-  runTransaction,
+  where,
+  writeBatch,
 } from 'firebase/firestore';
 import emailjs from '@emailjs/browser';
 
@@ -145,17 +145,22 @@ const sendAlertEmail = async ({ toEmail, toName, district, alertCount, descripti
 export const getTodayDistrictReportCount = async (district) => {
   if (!district) return 0;
   try {
-    const snap = await getDoc(doc(db, 'alerts', getClusterDocId(district)));
-    return snap.exists() ? (snap.data().reportCount || 0) : 0;
+    const dayKey = getDayKey();
+    const q = query(
+      collection(db, 'alerts'),
+      where('district', '==', district),
+      where('dayKey', '==', dayKey)
+    );
+    const snap = await getDocs(q);
+    return snap.size;
   } catch (err) {
     console.error('Error fetching today district report count:', err);
     return 0;
   }
 };
 
-// ── Main function: merge this report into today's district cluster ───────────
-// Creates/updates a single alerts/{district}_{today} doc instead of a new
-// alert doc per report. Confirms + emails once reportCount hits ALERT_THRESHOLD.
+// ── Main function: write a separate alert doc for every report,
+// while still tracking same-district daily progress and confirmation.
 export const submitDistrictReport = async ({
   district,
   description,
@@ -166,77 +171,77 @@ export const submitDistrictReport = async ({
 }) => {
   if (!district) return { reportCount: 0, status: 'pending', justConfirmed: false };
 
-  const dayKey  = getDayKey();
-  const alertRef = doc(db, 'alerts', getClusterDocId(district, dayKey));
-
-  let reportCount  = 1;
-  let status       = 'pending';
-  let justConfirmed = false;
+  const dayKey = getDayKey();
+  const alertsRef = collection(db, 'alerts');
 
   try {
-    await runTransaction(db, async (transaction) => {
-      const snap = await transaction.get(alertRef);
+    const reportsQuery = query(
+      alertsRef,
+      where('district', '==', district),
+      where('dayKey', '==', dayKey)
+    );
+    const snap = await getDocs(reportsQuery);
+    const existingReports = snap.docs;
 
-      if (snap.exists()) {
-        const data = snap.data();
-        const wasConfirmed = data.status === 'confirmed';
+    const currentTotal = existingReports.length + 1;
+    const wasAlreadyConfirmed = existingReports.some((d) => d.data().status === 'confirmed');
+    const status = wasAlreadyConfirmed || currentTotal >= ALERT_THRESHOLD ? 'confirmed' : 'pending';
+    const mergedSeverity = existingReports.reduce(
+      (prev, d) => higherSeverity(prev, d.data()?.severity),
+      severity
+    );
 
-        reportCount = (data.reportCount || 0) + 1;
-        status = wasConfirmed || reportCount >= ALERT_THRESHOLD ? 'confirmed' : 'pending';
-        justConfirmed = !wasConfirmed && status === 'confirmed';
+    const alertData = {
+      title: 'Community Report',
+      district,
+      dayKey,
+      reportCount: currentTotal,
+      status,
+      severity: mergedSeverity,
+      description,
+      loc,
+      location,
+      imageUrl,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    };
 
-        transaction.set(alertRef, {
-          district,
-          dayKey,
-          reportCount,
+    const newAlertRef = await addDoc(alertsRef, alertData);
+
+    if (existingReports.length > 0) {
+      const batch = writeBatch(db);
+      existingReports.forEach((docSnap) => {
+        const data = docSnap.data();
+        batch.update(doc(db, 'alerts', docSnap.id), {
+          reportCount: currentTotal,
           status,
           severity: higherSeverity(data.severity, severity),
-          description,
-          loc,
-          location,
-          imageUrl: imageUrl || data.imageUrl || null,
-          updatedAt: serverTimestamp(),
-        }, { merge: true });
-      } else {
-        status = ALERT_THRESHOLD <= 1 ? 'confirmed' : 'pending';
-        justConfirmed = status === 'confirmed';
-
-        transaction.set(alertRef, {
-          title: 'Community Report',
-          district,
-          dayKey,
-          reportCount: 1,
-          status,
-          severity,
-          description,
-          loc,
-          location,
-          imageUrl,
-          createdAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
         });
-      }
-    });
+      });
+      await batch.commit();
+    }
 
     let usersNotified = 0;
+    const justConfirmed = !wasAlreadyConfirmed && status === 'confirmed';
 
     if (justConfirmed) {
       console.log(`🚨 "${district}" hit ${ALERT_THRESHOLD} reports today — confirming + notifying residents.`);
 
       const usersQuery = query(collection(db, 'users'), where('district', '==', district));
-      const usersSnap  = await getDocs(usersQuery);
+      const usersSnap = await getDocs(usersQuery);
       const users = [];
       usersSnap.forEach((d) => users.push(d.data()));
 
       if (users.length > 0) {
         const emailPromises = users.map((u) =>
           sendAlertEmail({
-            toEmail:     u.email,
-            toName:      u.name,
+            toEmail: u.email,
+            toName: u.name,
             district,
-            alertCount:  ALERT_THRESHOLD,
+            alertCount: ALERT_THRESHOLD,
             description,
-            location:    loc,
+            location: loc,
           })
         );
         await Promise.allSettled(emailPromises);
@@ -244,7 +249,7 @@ export const submitDistrictReport = async ({
       usersNotified = users.length;
     }
 
-    return { reportCount, status, justConfirmed, usersNotified };
+    return { reportCount: currentTotal, status, justConfirmed, usersNotified };
   } catch (err) {
     console.error('Error in submitDistrictReport:', err);
     return { reportCount: 0, status: 'pending', justConfirmed: false, error: err.message };
