@@ -24,6 +24,7 @@ const Alerts = () => {
   const [deleted, setDeleted] = useState([]);     // ids that just got deleted (for exit anim)
   const [filter, setFilter] = useState('all');  // 'all' | 'high' | 'medium' | 'low'
   const [confirmDeleteId, setConfirmDeleteId] = useState(null); // id of card requesting deletion confirmation
+  const [imageModalUrl, setImageModalUrl] = useState(null);
 
   // ── Auto-delete alerts older than EXPIRY_DAYS days ───────────────────────
   const purgeExpiredAlerts = useCallback(async () => {
@@ -92,6 +93,7 @@ const Alerts = () => {
           time: formattedTime,
           ageLabel,
           daysLeft,
+          imageUrl: d.imageUrl || null,
         };
       });
 
@@ -373,6 +375,25 @@ const Alerts = () => {
                       {alert.description}
                     </p>
 
+                    {alert.imageUrl && (
+                      <div style={{ marginTop: '12px', display: 'flex', justifyContent: 'center' }}>
+                        <img
+                          src={alert.imageUrl}
+                          alt={`Alert for ${alert.district}`}
+                          onClick={() => setImageModalUrl(alert.imageUrl)}
+                          style={{
+                            width: '180px',
+                            height: 'auto',
+                            objectFit: 'cover',
+                            borderRadius: '12px',
+                            border: '1px solid rgba(255,255,255,0.08)',
+                            boxShadow: '0 10px 24px rgba(0,0,0,0.22)',
+                            cursor: 'pointer',
+                          }}
+                        />
+                      </div>
+                    )}
+
                     {/* Expiry countdown bar */}
                     <div style={{ marginTop: '12px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: '#475569', marginBottom: '4px' }}>
@@ -446,6 +467,35 @@ const Alerts = () => {
                 Delete
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Image preview modal ────────────────────────────────────────────────── */}
+      {imageModalUrl && (
+        <div className="modal-overlay" onClick={() => setImageModalUrl(null)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <h3 style={{ margin: 0, fontSize: '1.1rem', color: '#e2e8f0' }}>Uploaded Image</h3>
+              <button
+                onClick={() => setImageModalUrl(null)}
+                style={{
+                  padding: '6px 12px',
+                  borderRadius: '999px',
+                  border: '1px solid rgba(255,255,255,0.12)',
+                  background: 'rgba(15,23,42,0.9)',
+                  color: '#fff',
+                  cursor: 'pointer',
+                }}
+              >
+                Close
+              </button>
+            </div>
+            <img
+              src={imageModalUrl}
+              alt="Alert full view"
+              style={{ maxWidth: '100%', maxHeight: '70vh', borderRadius: '12px' }}
+            />
           </div>
         </div>
       )}

@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import {
   submitDistrictReport,
   getTodayDistrictReportCount,
+  uploadImageToImgbb,
   SRI_LANKA_DISTRICTS,
 } from '../utils/districtAlertService';
 
@@ -169,6 +170,9 @@ const Report = () => {
   });
   const [severity, setSeverity] = useState('medium'); // 'high' | 'medium' | 'low'
   const [submitted, setSubmitted] = useState(false);
+  const [submittedImageUrl, setSubmittedImageUrl] = useState(null);
+  const [submittedDistrict, setSubmittedDistrict] = useState('');
+  const [imageModalOpen, setImageModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [emailTriggered, setEmailTriggered] = useState(false);
   const [emailsCount, setEmailsCount] = useState(0);
@@ -252,6 +256,16 @@ const Report = () => {
     setEmailTriggered(false);
 
     try {
+      let imageUrl = null;
+      if (formData.file) {
+        imageUrl = await uploadImageToImgbb(formData.file);
+        if (!imageUrl) {
+          alert('Image upload failed. Please try again or remove the file.');
+          setIsSubmitting(false);
+          return;
+        }
+      }
+
       // Merge this report into today's district cluster (same district + same
       // calendar day only). Confirms + emails automatically once it hits 3.
       const result = await submitDistrictReport({
@@ -263,6 +277,7 @@ const Report = () => {
           lat: parseFloat(lat),
           lng: parseFloat(lng),
         },
+        imageUrl,
       });
 
       if (result.justConfirmed) {
@@ -270,8 +285,9 @@ const Report = () => {
         setEmailsCount(result.usersNotified || 0);
       }
       setDistrictCount(result.reportCount || 0);
-
       setSubmitted(true);
+      setSubmittedImageUrl(imageUrl);
+      setSubmittedDistrict(formData.district);
       setFormData({ location: '', description: '', district: '', file: null });
       setSeverity('medium'); // reset severity after submit
 
@@ -281,6 +297,9 @@ const Report = () => {
       setTimeout(() => {
         setSubmitted(false);
         setEmailTriggered(false);
+        setSubmittedImageUrl(null);
+        setSubmittedDistrict('');
+        setImageModalOpen(false);
       }, 6000);
     } catch (error) {
       console.error('Error submitting report:', error);
@@ -336,7 +355,28 @@ const Report = () => {
 
           {submitted && !emailTriggered && (
             <div style={styles.successBanner}>
-              ✅ Alert submitted successfully! Thank you for helping your community.
+              <div style={{ marginBottom: submittedImageUrl ? '12px' : '0' }}>
+                ✅ Alert submitted successfully! Thank you for helping your community.
+              </div>
+              {submittedImageUrl && (
+                <div style={{ marginTop: '10px', textAlign: 'center' }}>
+                  <img
+                    src={submittedImageUrl}
+                    alt="Uploaded alert"
+                    onClick={() => setImageModalOpen(true)}
+                    title="Click to view full image"
+                    style={{
+                      width: '200px',
+                      height: 'auto',
+                      objectFit: 'cover',
+                      cursor: 'pointer',
+                      borderRadius: '12px',
+                      border: '1px solid rgba(255,255,255,0.08)',
+                      boxShadow: '0 4px 18px rgba(0,0,0,0.25)',
+                    }}
+                  />
+                </div>
+              )}
             </div>
           )}
           {showProgress && (
@@ -568,6 +608,70 @@ const Report = () => {
           </div>
         </div>
       </section>
+
+      {imageModalOpen && submittedImageUrl && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            background: 'rgba(0,0,0,0.75)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+            padding: '20px',
+          }}
+          onClick={() => setImageModalOpen(false)}
+        >
+          <div
+            style={{
+              position: 'relative',
+              maxWidth: '100%',
+              maxHeight: '100%',
+              borderRadius: '16px',
+              overflow: 'hidden',
+              boxShadow: '0 24px 60px rgba(0,0,0,0.6)',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setImageModalOpen(false)}
+              style={{
+                position: 'absolute',
+                top: '12px',
+                right: '12px',
+                zIndex: 10,
+                padding: '8px 12px',
+                border: 'none',
+                borderRadius: '999px',
+                background: 'rgba(15,23,42,0.95)',
+                color: '#fff',
+                cursor: 'pointer',
+                fontSize: '0.95rem',
+              }}
+            >
+              Close
+            </button>
+            <img
+              src={submittedImageUrl}
+              alt="Uploaded alert full view"
+              style={{
+                display: 'block',
+                maxWidth: '90vw',
+                maxHeight: '90vh',
+                width: 'auto',
+                height: 'auto',
+              }}
+            />
+          </div>
+        </div>
+      )}
     </>
   );
 };

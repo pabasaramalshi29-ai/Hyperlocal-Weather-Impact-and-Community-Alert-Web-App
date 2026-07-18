@@ -37,6 +37,41 @@ const ALERT_THRESHOLD = 3; // Number of same-day reports that triggers confirmat
 const EMAILJS_SERVICE_ID  = import.meta.env.VITE_EMAILJS_SERVICE_ID;
 const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
 const EMAILJS_PUBLIC_KEY  = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+const IMGBB_API_KEY       = import.meta.env.VITE_IMGBB_API_KEY;
+
+const IMGBB_ENDPOINT = 'https://api.imgbb.com/1/upload';
+
+const uploadImageToImgbb = async (file) => {
+  if (!file) return null;
+  if (!IMGBB_API_KEY) {
+    console.warn('⚠️ ImgBB API key not configured. Set VITE_IMGBB_API_KEY in your .env file.');
+    return null;
+  }
+
+  try {
+    const formData = new FormData();
+    formData.append('image', file);
+    formData.append('key', IMGBB_API_KEY);
+
+    const response = await fetch(IMGBB_ENDPOINT, {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      console.error('ImgBB upload failed:', response.status, response.statusText, errorBody);
+      alert(`Image upload failed: ${response.statusText} (${response.status}). Please try again or remove the file.`);
+      return null;
+    }
+
+    const data = await response.json();
+    return data?.data?.url || null;
+  } catch (err) {
+    console.error('ImgBB upload error:', err);
+    return null;
+  }
+};
 
 // ── Sri Lanka Districts ───────────────────────────────────────────────────────
 export const SRI_LANKA_DISTRICTS = [
@@ -127,6 +162,7 @@ export const submitDistrictReport = async ({
   severity,
   loc,
   location,
+  imageUrl,
 }) => {
   if (!district) return { reportCount: 0, status: 'pending', justConfirmed: false };
 
@@ -158,6 +194,7 @@ export const submitDistrictReport = async ({
           description,
           loc,
           location,
+          imageUrl: imageUrl || data.imageUrl || null,
           updatedAt: serverTimestamp(),
         }, { merge: true });
       } else {
@@ -174,6 +211,7 @@ export const submitDistrictReport = async ({
           description,
           loc,
           location,
+          imageUrl,
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
         });
@@ -214,6 +252,8 @@ export const submitDistrictReport = async ({
 };
 
 // ── Save user to Firestore (called from SignUp) ───────────────────────────────
+export { uploadImageToImgbb };
+
 export const saveUserToFirestore = async ({ name, email, district }) => {
   if (!email) return false;
 
