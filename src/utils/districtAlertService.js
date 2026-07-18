@@ -97,24 +97,25 @@ const getDayKey = () =>
 const normalizeLocationKey = (text) =>
   (text || '').trim().toLowerCase();
 
+const getLocationKey = ({ loc, location }) => {
+  const locKey = normalizeLocationKey(loc);
+  if (locKey) return `text:${locKey}`;
+  if (
+    location &&
+    typeof location.lat === 'number' &&
+    typeof location.lng === 'number'
+  ) {
+    return `coord:${location.lat.toFixed(4)},${location.lng.toFixed(4)}`;
+  }
+  return '';
+};
+
 const isSameExactLocation = (data, loc, location) => {
   if (!data) return false;
 
-  const currentLocText = normalizeLocationKey(loc);
-  const existingLocText = normalizeLocationKey(data.loc);
-  const sameLocText = currentLocText && existingLocText && currentLocText === existingLocText;
-
-  const currentCoords = location || {};
-  const existingCoords = data.location || {};
-  const sameCoords =
-    typeof existingCoords.lat === 'number' &&
-    typeof existingCoords.lng === 'number' &&
-    typeof currentCoords.lat === 'number' &&
-    typeof currentCoords.lng === 'number' &&
-    Math.abs(existingCoords.lat - currentCoords.lat) < 0.0001 &&
-    Math.abs(existingCoords.lng - currentCoords.lng) < 0.0001;
-
-  return sameLocText || sameCoords;
+  const currentKey = getLocationKey({ loc, location });
+  const existingKey = data.locationKey || getLocationKey({ loc: data.loc, location: data.location });
+  return currentKey && existingKey && currentKey === existingKey;
 };
 
 // ── Send one email via EmailJS ─────────────────────────────────────────────
@@ -218,6 +219,7 @@ export const submitDistrictReport = async ({
       (prev, d) => higherSeverity(prev, d.data()?.severity),
       severity
     );
+    const locationKey = getLocationKey({ loc, location });
 
     const alertData = {
       title: 'Community Report',
@@ -229,6 +231,7 @@ export const submitDistrictReport = async ({
       description,
       loc,
       location,
+      locationKey,
       imageUrl,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
@@ -244,6 +247,7 @@ export const submitDistrictReport = async ({
           reportCount: currentLocationCount,
           status,
           severity: higherSeverity(data.severity, severity),
+          locationKey,
           updatedAt: serverTimestamp(),
         });
       });
